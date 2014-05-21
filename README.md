@@ -49,7 +49,7 @@ UPenn uses QGenda for resident scheduling.  With proper scheduling integration C
 
 This script displays call-related data in Capricorn.  In order to function properly, it relies on the capricorn.ResidentRotation table to be populated, which at UPenn can be done using the tools/qgendaImporter.php script.
 
-#### Analytics
+### Analytics
 
 Analytics relies on a lot of pre-calculation in order to be responsive.  A design decision has been made to calculate up-to-date information (i.e. the resident's counts from THIS year) on-demand, but pre-calculate the remaining numbers.
 
