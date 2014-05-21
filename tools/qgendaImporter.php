@@ -1,11 +1,12 @@
 <?php
 require "class.iCalReader.php";
+include "capricornLib.php";
 
 $runTimeStart = date_create('NOW');
 echo "Updating resident rotations. <BR>";
 
 /** Config **/
-$sourceFileOrURL = "http://www.qgenda.com/mycal.aspx?key=a097aed0-3316-4840-ab40-eab0c314c1a1";
+$sourceFileOrURL = "http://www.qgenda.com/mycal.aspx?key=YOUR QGENDA KEY";
 //$sourceFileOrURL = "University_of_Pennsylvania_-_Radiology_Department_Staff_Report_7-1-2013_to_12-1-2013.ics";         // Should be written so this can use both a file or a subscription URL.
 
 $singleDayCalls = array();
@@ -42,11 +43,6 @@ function parseSummary($inputString) {
 }
 
 $traineeIDMap = array();
-
-$resdbConn = new mysqli('localhost', 'chenp', '6qvQ6drD572x3hut','capricorn');
-if (mysqli_connect_errno($resdbConn)) {
-    echo "Failed to connect to MySQL: " . mysqli_connect_error();
-}
 
 if ($result = $resdbConn->query("SELECT TraineeID,QGendaName FROM ResidentIDDefinition WHERE QGendaName IS NOT NULL;")) {
     $result = $result->fetch_all(MYSQLI_ASSOC);
