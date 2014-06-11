@@ -1,0 +1,98 @@
+Capricorn Installation Instructions
+
+Part A - Getting Data into Capricorn
+
+Data from your RIS or data warehouse is loaded into our exammeta table.
+
+Columns are as follows:
++-----------------+-------------+------+-----+---------+-------+
+| Field           | Type        | Null | Key | Default | Extra |
++-----------------+-------------+------+-----+---------+-------+
+| InternalID      | varchar(30) | NO   | PRI | NULL    |       |
+| AccessionNumber | varchar(8)  | YES  |     | NULL    |       |
+| LastName        | varchar(25) | NO   |     | NULL    |       |
+| FirstName       | varchar(25) | NO   |     | NULL    |       |
+| PatientID       | tinyint(11) | NO   |     | NULL    |       |
+| ExamCode        | varchar(16) | YES  |     | NULL    |       |
+| TraineeID       | int(11)     | YES  | MUL | NULL    |       |
+| AttendingID     | int(11)     | YES  |     | NULL    |       |
+| OrganizationID  | int(11)     | YES  |     | NULL    |       |
+| Organization    | varchar(8)  | NO   |     | NULL    |       |
+| CompletedDTTM   | datetime    | YES  | MUL | NULL    |       |
+| InquiryDTTM     | datetime    | YES  |     | NULL    |       |
+| DraftDTTM       | datetime    | YES  |     | NULL    |       |
+| PrelimDTTM      | datetime    | YES  |     | NULL    |       |
+| ResidentYear    | int(11)     | YES  |     | NULL    |       |
++-----------------+-------------+------+-----+---------+-------+
+
+In our installation we use tools/updateExam.php to pull from a shadow copy of our RIS database.
+You will need to find a similar mechanism to populate this information in your institution.
+
+Codes in the examcodedefinition table will also need to be loaded from your chargemaster
+
+examcodedefinition
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| InternalCode | varchar(18) | NO   | PRI |         |       |
+| ORG          | varchar(7)  | YES  |     | NULL    |       |
+| ExamCode     | varchar(10) | YES  | MUL | NULL    |       |
+| Description  | varchar(73) | YES  |     | NULL    |       |
+| Department   | varchar(10) | YES  |     | NULL    |       |
+| Modality     | varchar(8)  | YES  |     | NULL    |       |
+| BodySite     | varchar(10) | YES  |     | NULL    |       |
+| SubSpecialty | varchar(9)  | YES  |     | NULL    |       |
+| Rotation     | varchar(9)  | YES  |     | NULL    |       |
+| Section      | varchar(6)  | YES  |     | NULL    |       |
+| Type         | varchar(6)  | YES  |     | NULL    |       |
+| Notes        | varchar(16) | YES  |     | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
+
+Capricorn also needs to know which rotations each resident was on when the exams were dictated.
+In our system, we use Qgenda for resdient scheduling and have tools/qgendaImporter.php to parse
+the iCal Schedule downloaded from Qgenda.com into the residentRotation table.  
+
+In order for qgendaImporter to work correctly, the qGendaName must be populated in the residentiddescription
+table.
+
+qgendaImporter works by adding data to the residentrotationraw table and then parsing it into 
+the residentrotation table.
+
+residentrotation
++-------------------+-------------+------+-----+---------+-------+
+| Field             | Type        | Null | Key | Default | Extra |
++-------------------+-------------+------+-----+---------+-------+
+| TraineeID         | int(11)     | NO   |     | NULL    |       |
+| Rotation          | varchar(25) | NO   |     | NULL    |       |
+| RotationStartDate | date        | NO   |     | NULL    |       |
+| RotationEndDate   | date        | NO   |     | NULL    |       |
++-------------------+-------------+------+-----+---------+-------+
+
+residentiddescription
++------------------+-------------+------+-----+---------+-------+
+| Field            | Type        | Null | Key | Default | Extra |
++------------------+-------------+------+-----+---------+-------+
+| TraineeID        | int(11)     | NO   | PRI | NULL    |       |
+| FirstName        | varchar(25) | NO   |     | NULL    |       |
+| MiddleName       | varchar(25) | NO   |     |         |       |
+| LastName         | varchar(25) | NO   |     | NULL    |       |
+| IsCurrentTrainee | varchar(5)  | NO   |     | N       |       |
+| StartDate        | date        | NO   |     | NULL    |       |
+| QGendaName       | varchar(25) | YES  |     | NULL    |       |
++------------------+-------------+------+-----+---------+-------+
+
+The following table is used for display of attending names
+
+attendingiddefinition
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| AttendingID | int(11)     | NO   | PRI | NULL    |       |
+| LastName    | varchar(45) | NO   |     | NULL    |       |
+| FirstName   | varchar(45) | NO   |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+
+
+Part B - Web page display portal configuration
+1. Edit capricornConfig.php.dist with settings for your site and save-as capricornConfig.php
+2. Edit ldapconf.php.dist with settings for your site and save-as ldapconfig.php
