@@ -32,7 +32,7 @@
 include "capricornLib.php";
 session_start();
 error_reporting(1);
-$db = new mysqli('localhost', 'chenp', '6qvQ6drD572x3hut','capricorn');
+$db = new mysqli($mysql_host, $mysql_username, $mysql_passwd, $mysql_database);
 if (mysqli_connect_errno($db)) {
     echo "Failed to connect to MySQL: " . mysqli_connect_error();
 }
