@@ -40,6 +40,7 @@ $mysql_database = 'capricorn';
 $RISName = "blahblah.uphs.upenn.edu";
 $RISLogin = "risusername";
 $RISPwd = "rispassword";
+$RISDatabase = "risdatabasename";
 
 // Theme colors.
 $schemaColor[0] = '#000072';          // Darkest
