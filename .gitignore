@@ -1,0 +1,4 @@
+config/capricornConfig.php
+config/ldapconf.php
+log/*
+*~

@@ -36,7 +36,7 @@ include "config/capricornConfig.php";
  System-Wide Shared Functions 
  **************************************/
 
-$connectionInfo = array("Database"=>"idxrad", "UID"=>$RISLogin, "PWD"=>$RISPwd);
+$connectionInfo = array("Database"=>$RISDatabase, "UID"=>$RISLogin, "PWD"=>$RISPwd);
 
 $resdbConn = new mysqli($mysql_host, $mysql_username, $mysql_passwd, $mysql_database);
 if (mysqli_connect_errno($resdbConn)) {
