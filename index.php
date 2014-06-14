@@ -18,21 +18,24 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+<?php
+include "capricornLib.php";
+?>
 
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
 
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,700,800" rel="stylesheet" type="text/css" />
-    <script src="js/jquery.min.js"></script>
-    <script src="js/jquery.dropotron.min.js"></script>
-    <script src="js/config.js"></script>
-    <script src="js/skel.min.js"></script>
-    <script src="js/skel-panels.min.js"></script>
+    <script src="<?php echo $URL_root; ?>js/jquery.min.js"></script>
+    <script src="<?php echo $URL_root; ?>js/jquery.dropotron.min.js"></script>
+    <script src="<?php echo $URL_root; ?>js/config.js"></script>
+    <script src="<?php echo $URL_root; ?>js/skel.min.js"></script>
+    <script src="<?php echo $URL_root; ?>js/skel-panels.min.js"></script>
     <noscript>
-        <link rel="stylesheet" href="css/skel-noscript.css" />
-        <link rel="stylesheet" href="css/style.css" />
-        <link rel="stylesheet" href="css/style-desktop.css" />
+        <link rel="stylesheet" href="<?php echo $URL_root; ?>css/skel-noscript.css" />
+        <link rel="stylesheet" href="<?php echo $URL_root; ?>css/style.css" />
+        <link rel="stylesheet" href="<?php echo $URL_root; ?>css/style-desktop.css" />
     </noscript>
   <title>Capricorn - Progress made simple.</title>
 </head>

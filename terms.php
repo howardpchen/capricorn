@@ -3,8 +3,8 @@ include "capricornLib.php";?>
 <html>
 <head>
 <title>Terms of Service</title>
-<script src="js/jquery-1.9.1.js"></script>
-<script src="js/jquery-ui.js"></script>
+<script src="<?php echo $URL_root; ?>js/jquery-1.9.1.js"></script>
+<script src="<?php echo $URL_root; ?>js/jquery-ui.js"></script>
 </head>
 
 <?php
