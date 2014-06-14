@@ -69,7 +69,7 @@ while ($maxDoneDate < $endDTTM) {
 }
 
 
-$conn2 = sqlsrv_connect($RISName, $connectionInfo);
+$conn2 = sqlsrv_connect($RISDatabase, $connectionInfo);
 if (!$conn2) {
     echo "Could not connect to 24-hour RIS mirror!\n";    
     die(print_r(sqlsrv_errors(), true));
