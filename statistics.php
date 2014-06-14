@@ -25,12 +25,12 @@ include "capricornLib.php";
 <head>
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 <link href="chardinjs.css" rel="stylesheet">
-<script src="js/jquery-1.9.1.js"></script>
-<script src="js/jquery-ui.js"></script>
-<script src="js/highcharts.js"></script>
-<script src="js/highcharts-more.js"></script>
-<script src="js/collapseTable.js"></script>
-<script type='text/javascript' src="js/chardinjs.min.js"></script>
+<script src="<?php echo $URL_root; ?>js/jquery-1.9.1.js"></script>
+<script src="<?php echo $URL_root; ?>js/jquery-ui.js"></script>
+<script src="<?php echo $URL_root; ?>js/highcharts.js"></script>
+<script src="<?php echo $URL_root; ?>js/highcharts-more.js"></script>
+<script src="<?php echo $URL_root; ?>js/collapseTable.js"></script>
+<script type='text/javascript' src="<?php echo $URL_root; ?>js/chardinjs.min.js"></script>
 </head>
 <?php include "header.php";?>
 <Title>Capricorn - <?php echo getLoginUserFullName();?></title>
