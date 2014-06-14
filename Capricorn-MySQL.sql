@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `examcodedefinition` (
 
 CREATE TABLE IF NOT EXISTS `exammeta` (
   `InternalID` varchar(30) NOT NULL,
-  `AccessionNumber` varchar(8) DEFAULT NULL,
+  `AccessionNumber` varchar(16) DEFAULT NULL,
   `LastName` varchar(25) NOT NULL,
   `FirstName` varchar(25) NOT NULL,
   `PatientID` tinyint(11) NOT NULL,
