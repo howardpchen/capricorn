@@ -48,8 +48,8 @@ examcodedefinition
 | Notes        | varchar(16) | YES  |     | NULL    |       |
 +--------------+-------------+------+-----+---------+-------+
 
-Capricorn also needs to know which rotations each resident was on when the exams were dictated.
-In our system, we use Qgenda for resdient scheduling and have tools/qgendaImporter.php to parse
+Although not necessary for function, Capricorn benefits from knowing which rotations each resident was on when the exams were dictated.
+In our system, we use QGenda for resident scheduling and have tools/qgendaImporter.php to parse
 the iCal Schedule downloaded from Qgenda.com into the residentRotation table.  
 
 In order for qgendaImporter to work correctly, the qGendaName must be populated in the residentiddescription
