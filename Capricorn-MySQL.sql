@@ -10,15 +10,23 @@ CREATE TABLE IF NOT EXISTS `attendingiddefinition` (
   PRIMARY KEY (`AttendingID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `attendingiddefinition`
+--
+
+LOCK TABLES `attendingiddefinition` WRITE;
+/*!40000 ALTER TABLE `attendingiddefinition` DISABLE KEYS */;
+INSERT INTO `attendingiddefinition` VALUES (1,'Stein','Ben');
+/*!40000 ALTER TABLE `attendingiddefinition` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
 CREATE TABLE IF NOT EXISTS `examcodedefinition` (
   `InternalCode` varchar(18) NOT NULL DEFAULT '',
   `ORG` varchar(7) DEFAULT NULL,
   `ExamCode` varchar(10) DEFAULT NULL,
   `Description` varchar(73) DEFAULT NULL,
   `Department` varchar(10) DEFAULT NULL,
-  `Modality` varchar(8) DEFAULT NULL,
-  `BodySite` varchar(10) DEFAULT NULL,
-  `SubSpecialty` varchar(9) DEFAULT NULL,
   `Rotation` varchar(9) DEFAULT NULL,
   `Section` varchar(6) DEFAULT NULL,
   `Type` varchar(6) DEFAULT NULL,
