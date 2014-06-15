@@ -1,5 +1,5 @@
 <?php
-include "capricornLib.php";
+include "../capricornLib.php";
 /*
     Capricorn - Open-source analytics tool for radiology residents.
     Copyright (C) 2014  (Howard) Po-Hao Chen
@@ -38,35 +38,8 @@ $startFromYear = 2008;
 $endAtYear = 2013;
 
 $runTimeStart = date_create('NOW');
-function flush_buffers(){
-//    ob_end_flush();
-    ob_flush();
-    flush();
-    sleep(0.5);
-//    ob_start();
-} 
 
-function getExamCodeData($info = 'Section, Type, Notes', $array=NULL, $suffix="") {
-    global $resdbConn;
-    $sql = "SELECT DISTINCT $info FROM examcodedefinition  ";
-    if ($array != NULL) { 
-        $first = True;
-        foreach ($array as $k=>$v) {
-            if ($first == False) {
-                $sql = $sql . "AND ";
-            }
-            $first = False;
-            $sql = $sql . "$k LIKE '$v' ";
-        }
-    }
-    $sql .= " $suffix"; 
-    $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
-    $results = $results->fetch_all();
-    return $results;
-}
-    
-
-$smn = getExamCodeData();
+$smn = getExamCodeData('Section, Type, Notes', NULL, "ORDER BY TYPE");
 
 foreach ($smn as $codeData) {
     $section = $codeData[0];
