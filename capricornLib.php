@@ -535,18 +535,6 @@ function getRotationsByTrainee($residentID) {
     return $results;
 }
 
-/* Returns a list of distinct rotations, sections, and modalities 
-    [0] = Body Anatomy
-    [2] = Modality
-    [3] = Note
-*/
-function getDetailedStudiesByRotation($rotation) {
-    global $resdbConn;
-    $sql = "SELECT DISTINCT Section,Modality,Note FROM examcodedefinition WHERE Rotation=$rotation;";
-    $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
-    $results = $results->fetch_all();
-    return $results;
-}
 
 /* Searchs for section, type, note satisfying these criteria.  
    Takes $array as an argument, where 'key'=>'value' are the search crtieria.
