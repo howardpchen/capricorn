@@ -20,7 +20,6 @@ INSERT INTO `attendingiddefinition` VALUES (1,'Stein','Ben');
 /*!40000 ALTER TABLE `attendingiddefinition` ENABLE KEYS */;
 UNLOCK TABLES;
 
-
 CREATE TABLE IF NOT EXISTS `examcodedefinition` (
   `InternalCode` varchar(18) NOT NULL DEFAULT '',
   `ORG` varchar(7) DEFAULT NULL,
@@ -36,6 +35,36 @@ CREATE TABLE IF NOT EXISTS `examcodedefinition` (
   KEY `Rotation` (`ExamCode`,`Notes`,`Section`,`Type`,`ORG`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+/* Valid values for Type:
+
+BABY
+CR
+CT
+CTA
+FLUO
+MAMMO
+MR
+NM
+US
+
+*/
+
+/*  Valid values for Section:
+
+CHEST
+BODY
+MSK
+NEURO
+BREAST
+BABY
+CVI
+IR
+GI
+GU
+SPINE
+MISC
+
+*/
 
 --
 -- Dumping data for table `examcodedefinition`
@@ -43,11 +72,9 @@ CREATE TABLE IF NOT EXISTS `examcodedefinition` (
 
 LOCK TABLES `examcodedefinition` WRITE;
 /*!40000 ALTER TABLE `examcodedefinition` DISABLE KEYS */;
-INSERT INTO `examcodedefinition` VALUES ('1','hosp','RPID2503','XR CHEST 2 VIEWS','dept','UH Chest','CHEST','XR','notes: nil');
+INSERT INTO `examcodedefinition` VALUES ('1','hosp','RPID2503','XR CHEST 2 VIEWS','dept','UH Chest','CHEST','CR','notes: nil'),('2','hosp','RPID2605','XR PEDIATRIC BABYGRAM','dept','Peds','BABY','BABY','notes: nil');
 /*!40000 ALTER TABLE `examcodedefinition` ENABLE KEYS */;
 UNLOCK TABLES;
-
-
 
 CREATE TABLE IF NOT EXISTS `exammeta` (
   `InternalID` varchar(30) NOT NULL,
