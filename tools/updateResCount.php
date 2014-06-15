@@ -39,7 +39,7 @@ $endAtYear = 2013;
 
 $runTimeStart = date_create('NOW');
 
-$smn = getExamCodeData();
+$smn = getExamCodeData('Section, Type, Notes', NULL, "ORDER BY TYPE");
 
 foreach ($smn as $codeData) {
     $section = $codeData[0];
