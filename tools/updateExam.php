@@ -40,7 +40,7 @@ include "../capricornLib.php";
 
 $runTimeStart = date_create('NOW');
 $endDTTM = date_create('NOW');
-$interval = new DateInterval("P7D");
+$interval = new DateInterval("P4D");
 $startDTTM = date_create('NOW');
 $startDTTM->sub($interval);
 
@@ -69,7 +69,7 @@ while ($maxDoneDate < $endDTTM) {
 }
 
 
-$conn2 = sqlsrv_connect($RISDatabase, $connectionInfo);
+$conn2 = sqlsrv_connect($RISName, $connectionInfo);
 if (!$conn2) {
     echo "Could not connect to 24-hour RIS mirror!\n";    
     die(print_r(sqlsrv_errors(), true));

@@ -48,15 +48,14 @@ examcodedefinition
 | Notes        | varchar(16) | YES  |     | NULL    |       |
 +--------------+-------------+------+-----+---------+-------+
 
-Although not necessary for function, Capricorn benefits from knowing which rotations each resident was on when the exams were dictated.
-In our system, we use QGenda for resident scheduling and have tools/qgendaImporter.php to parse
-the iCal Schedule downloaded from Qgenda.com into the residentRotation table.  
+Although not necessary for function, Capricorn benefits from knowing which rotations each resident was on when the exams were dictated.  In our system, we use QGenda for resident scheduling and have tools/qgendaImporter.php to parse the iCal Schedule downloaded from Qgenda.com into the residentRotation table.  
 
-In order for qgendaImporter to work correctly, the qGendaName must be populated in the residentiddescription
-table.
+In order for qgendaImporter to work correctly, the qGendaName must be populated in the residentiddefinition table.
 
 qgendaImporter works by adding data to the residentrotationraw table and then parsing it into 
 the residentrotation table.
+
+
 
 residentrotation
 +-------------------+-------------+------+-----+---------+-------+
@@ -68,7 +67,7 @@ residentrotation
 | RotationEndDate   | date        | NO   |     | NULL    |       |
 +-------------------+-------------+------+-----+---------+-------+
 
-residentiddescription
+residentiddefinition
 +------------------+-------------+------+-----+---------+-------+
 | Field            | Type        | Null | Key | Default | Extra |
 +------------------+-------------+------+-----+---------+-------+
@@ -81,7 +80,7 @@ residentiddescription
 | QGendaName       | varchar(25) | YES  |     | NULL    |       |
 +------------------+-------------+------+-----+---------+-------+
 
-The following table is used for display of attending names
+The following table is used for display of attending names.  As Capricorn adds new studies, it will look up the studys' attending name from RIS and add here.  This way new attendings will be automatically added as soon as they interprete a study.
 
 attendingiddefinition
 +-------------+-------------+------+-----+---------+-------+
@@ -93,6 +92,28 @@ attendingiddefinition
 +-------------+-------------+------+-----+---------+-------+
 
 
+Capricorn handles logins in one of two ways.  First by registration.  New users can register by going through create_account.html, which will run their name in Capricorn to ensure they are a current resident, then use find_user.php and add_user.php to add an entry into LoginMember table.
+
+Alternatively, Capricorn supports LDAP, which allows the user to simply use their email account to log into Capricorn.  checklogin.php can work with both - it will first check LDAP, then if user is not found, check LoginMember.
+
+One more caveat: TraineeID 99999999 is an administrative user.  An account associated with this TraineeID logs into admin/index.php instead of login_success.php.  Generally this should be a LoginMember entry.  An easy way is just to define this user in ResidentIDDefinition, then go through create_account.html to create a password for it.
+
+loginmember
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| TraineeID   | int(11)     | NO   | PRI | NULL    |       |
+| Username    | varchar(25) | NO   |     | NULL    |       |
+| PasswordHash| text        | NO   |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+
+
+
+
+
 Part B - Web page display portal configuration
 1. Edit capricornConfig.php.dist with settings for your site and save-as capricornConfig.php
 2. Edit ldapconf.php.dist with settings for your site and save-as ldapconfig.php
+
+
+Part C - 

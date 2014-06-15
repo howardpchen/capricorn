@@ -37,7 +37,8 @@ $mysql_database = 'capricorn';
 
 // This portion of the code is for updating Capricorn using RIS.
 // Also used to display actual study report by displayReport.php
-$RISDatabase = "blahblah.uphs.upenn.edu";
+$RISName = "blahblah.uphs.upenn.edu";
+$RISDatabase = "risdatabase_table";
 $RISLogin = "risusername";
 $RISPwd = "rispassword";
 $RISDatabase = "risdatabasename";
