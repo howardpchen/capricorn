@@ -36,6 +36,19 @@ CREATE TABLE IF NOT EXISTS `examcodedefinition` (
   KEY `Rotation` (`ExamCode`,`Notes`,`Section`,`Type`,`ORG`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+--
+-- Dumping data for table `examcodedefinition`
+--
+
+LOCK TABLES `examcodedefinition` WRITE;
+/*!40000 ALTER TABLE `examcodedefinition` DISABLE KEYS */;
+INSERT INTO `examcodedefinition` VALUES ('1','hosp','RPID2503','XR CHEST 2 VIEWS','dept','UH Chest','CHEST','XR','notes: nil');
+/*!40000 ALTER TABLE `examcodedefinition` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+
 CREATE TABLE IF NOT EXISTS `exammeta` (
   `InternalID` varchar(30) NOT NULL,
   `AccessionNumber` varchar(16) DEFAULT NULL,
@@ -57,12 +70,32 @@ CREATE TABLE IF NOT EXISTS `exammeta` (
   KEY `TraineeID` (`TraineeID`,`CompletedDTTM`,`ExamCode`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `exammeta`
+--
+
+LOCK TABLES `exammeta` WRITE;
+/*!40000 ALTER TABLE `exammeta` DISABLE KEYS */;
+INSERT INTO `exammeta` VALUES ('1','1234','Flintstone','Wilma',120,'RPID2503',1,1,1,'hosp','2014-06-01 17:00:00','2014-06-01 17:05:00','2014-06-01 17:10:00','2014-06-01 17:11:02',1),('2','1234','Flintstone','Wilma',120,'RPID2503',1,1,1,'hosp','2014-06-02 17:00:00','2014-06-02 17:05:00','2014-06-02 17:10:00','2014-06-02 17:11:02',1),('3','1234','Flintstone','Wilma',120,'RPID2503',1,1,1,'hosp','2014-06-02 19:00:00','2014-06-02 19:05:00','2014-06-02 19:10:00','2014-06-02 19:11:02',1),('4','1234','Flintstone','Wilma',120,'RPID2503',1,1,1,'hosp','2014-06-03 10:30:00','2014-06-03 10:35:00','2014-06-03 10:40:00','2014-06-03 19:41:02',1);
+/*!40000 ALTER TABLE `exammeta` ENABLE KEYS */;
+UNLOCK TABLES;
+
 CREATE TABLE IF NOT EXISTS `loginmember` (
   `TraineeID` int(11) NOT NULL,
   `Username` varchar(25) NOT NULL,
   `PasswordHash` text NOT NULL,
   PRIMARY KEY (`TraineeID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `loginmember`
+--
+
+LOCK TABLES `loginmember` WRITE;
+/*!40000 ALTER TABLE `loginmember` DISABLE KEYS */;
+INSERT INTO `loginmember` VALUES (1,'fbueler','$2BTThe03q1l2');
+/*!40000 ALTER TABLE `loginmember` ENABLE KEYS */;
+UNLOCK TABLES;
 
 CREATE TABLE IF NOT EXISTS `residentcounts` (
   `UniqueID` varchar(40) NOT NULL,
@@ -86,6 +119,16 @@ CREATE TABLE IF NOT EXISTS `residentiddefinition` (
   `QGendaName` varchar(25) DEFAULT NULL,
   PRIMARY KEY (`TraineeID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `residentiddefinition`
+--
+
+LOCK TABLES `residentiddefinition` WRITE;
+/*!40000 ALTER TABLE `residentiddefinition` DISABLE KEYS */;
+INSERT INTO `residentiddefinition` VALUES (1,'Ferris','D','Bueller','Y','2013-07-01','FBue');
+/*!40000 ALTER TABLE `residentiddefinition` ENABLE KEYS */;
+UNLOCK TABLES;
 
 CREATE TABLE IF NOT EXISTS `residentrotation` (
   `TraineeID` int(11) NOT NULL,
