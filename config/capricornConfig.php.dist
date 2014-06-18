@@ -60,4 +60,15 @@ $graphColor['IR'] = '#AA0000';
 $graphColor['GI'] = '#008888';
 $graphColor['GU'] = '#880088';
 $graphColor['SPINE'] = '#8888CC';
+
+$examType['CR'] = 'Radiograph';
+$examType['CT'] = 'CT';
+$examType['CTA'] = 'CTA';
+$examType['FLUO'] = 'Fluoroscopy';
+$examType['MAMMO'] = 'Mammography';
+$examType['MR'] = 'MRI';
+$examType['NM'] = 'Nuclear Medicine';
+$examType['US'] = 'Ultrasound';
+$examType['BABY'] = 'Babygram';
+
 ?>

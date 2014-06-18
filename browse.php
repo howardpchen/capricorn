@@ -166,15 +166,17 @@ if (isset($_GET['rota'])) {
 <input type="submit" id="sub" value="Go" /><br>
 <label>Modality:
 <select style="background:none" name='mod' id='mod'>
-<option value=''> All
-<option value='CR' <?php if (isset($_GET['mod']) && $_GET['mod'] == 'CR') echo 'selected'; ?>> Radiograph
-<option value='CT' <?php if (isset($_GET['mod']) && $_GET['mod'] == 'CT') echo 'selected'; ?>> CT
-<option value='CTA' <?php if (isset($_GET['mod']) && $_GET['mod'] == 'CTA') echo 'selected'; ?>> CTA
-<option value='FLUO' <?php if (isset($_GET['mod']) && $_GET['mod'] == 'FLUO') echo 'selected'; ?>> Fluoroscopy
-<option value='MAMMO' <?php if (isset($_GET['mod']) && $_GET['mod'] == 'MAMMO') echo 'selected'; ?>> Mammography
-<option value='MR' <?php if (isset($_GET['mod']) && $_GET['mod'] == 'MR') echo 'selected'; ?>> MRI
-<option value='NM' <?php if (isset($_GET['mod']) && $_GET['mod'] == 'NM') echo 'selected'; ?>> Nuclear Medicine
-<option value='US' <?php if (isset($_GET['mod']) && $_GET['mod'] == 'US') echo 'selected'; ?>> Ultrasound
+<option value=''> All </option>
+
+<?php
+foreach ($examType as $short => $long) {
+    $selected = '';
+    if (isset($_GET['mod']) && $_GET['mod'] == $short) $selected = 'selected';
+
+    echo "<option value='" . $short . "' " . $selected . " >" . $long . "</option>\n";
+}
+
+?>
 
 </select></label>
 </form>
