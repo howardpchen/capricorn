@@ -63,8 +63,10 @@ var pointInt = <?php echo $dayInt?> * 24 * 3600 * 1000;
 $arrangement = array_unique($arrangement);
 
 // Move babygrams to the end
-unset($arrangement[0]);
-$arrangement[] = "BABY";
+if ($arrangement[0] == "BABY") {
+    unset($arrangement[0]);
+    $arrangement[] = "BABY";
+}
 
 foreach ($arrangement as $mod) {
     if ($cumulative) assembleGraph($mod, 'area', $dispArray[$mod]);
