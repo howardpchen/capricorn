@@ -35,37 +35,6 @@ CREATE TABLE IF NOT EXISTS `examcodedefinition` (
   KEY `Rotation` (`ExamCode`,`Notes`,`Section`,`Type`,`ORG`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/* Valid values for Type:
-
-BABY
-CR
-CT
-CTA
-FLUO
-MAMMO
-MR
-NM
-US
-
-*/
-
-/*  Valid values for Section:
-
-CHEST
-BODY
-MSK
-NEURO
-BREAST
-BABY
-CVI
-IR
-GI
-GU
-SPINE
-MISC
-
-*/
-
 --
 -- Dumping data for table `examcodedefinition`
 --
