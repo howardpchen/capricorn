@@ -25,10 +25,11 @@ Columns are as follows:
 | ResidentYear    | int(11)     | YES  |     | NULL    |       |
 +-----------------+-------------+------+-----+---------+-------+
 
-In our installation we use tools/updateExam.php to pull from a shadow copy of our RIS database.
-You will need to find a similar mechanism to populate this information in your institution.
+In our installation we use tools/updateExam.php to pull from a shadow copy of our RIS database.  You will need to find a similar mechanism to populate this information in your institution.
 
 Codes in the examcodedefinition table will also need to be loaded from your chargemaster
+
+Make sure to add individual types and their long names to the $examType array in config/capricornConfig.php.
 
 examcodedefinition
 +--------------+-------------+------+-----+---------+-------+
@@ -52,10 +53,7 @@ Although not necessary for function, Capricorn benefits from knowing which rotat
 
 In order for qgendaImporter to work correctly, the qGendaName must be populated in the residentiddefinition table.
 
-qgendaImporter works by adding data to the residentrotationraw table and then parsing it into 
-the residentrotation table.
-
-
+qgendaImporter works by adding data to the residentrotationraw table and then parsing it into the residentrotation table.
 
 residentrotation
 +-------------------+-------------+------+-----+---------+-------+
@@ -66,6 +64,9 @@ residentrotation
 | RotationStartDate | date        | NO   |     | NULL    |       |
 | RotationEndDate   | date        | NO   |     | NULL    |       |
 +-------------------+-------------+------+-----+---------+-------+
+
+
+The Resident IDs table needs to be populated.  We use the same value for TraineeID as our RIS, but you may want to map to another standard.
 
 residentiddefinition
 +------------------+-------------+------+-----+---------+-------+
@@ -91,7 +92,6 @@ attendingiddefinition
 | FirstName   | varchar(45) | NO   |     | NULL    |       |
 +-------------+-------------+------+-----+---------+-------+
 
-
 Capricorn handles logins in one of two ways.  First by registration.  New users can register by going through create_account.html, which will run their name in Capricorn to ensure they are a current resident, then use find_user.php and add_user.php to add an entry into LoginMember table.
 
 Alternatively, Capricorn supports LDAP, which allows the user to simply use their email account to log into Capricorn.  checklogin.php can work with both - it will first check LDAP, then if user is not found, check LoginMember.
@@ -107,13 +107,9 @@ loginmember
 | PasswordHash| text        | NO   |     | NULL    |       |
 +-------------+-------------+------+-----+---------+-------+
 
-
-
-
-
 Part B - Web page display portal configuration
 1. Edit capricornConfig.php.dist with settings for your site and save-as capricornConfig.php
 2. Edit ldapconf.php.dist with settings for your site and save-as ldapconfig.php
-
+3. displayReport.php can be customized to allow for viewing reports at your local site.  Report text is not stored in the capricorn database.
 
 Part C - 
