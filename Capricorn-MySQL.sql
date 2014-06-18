@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `exammeta` (
   `AccessionNumber` varchar(16) DEFAULT NULL,
   `LastName` varchar(25) NOT NULL,
   `FirstName` varchar(25) NOT NULL,
-  `PatientID` tinyint(11) NOT NULL,
+  `PatientID` int(11) NOT NULL,
   `ExamCode` varchar(16) DEFAULT NULL,
   `TraineeID` int(11) DEFAULT NULL,
   `AttendingID` int(11) DEFAULT NULL,
