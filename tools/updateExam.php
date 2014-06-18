@@ -40,7 +40,7 @@ include "../capricornLib.php";
 
 $runTimeStart = date_create('NOW');
 $endDTTM = date_create('NOW');
-$interval = new DateInterval("P7D");
+$interval = new DateInterval("P4D");
 $startDTTM = date_create('NOW');
 $startDTTM->sub($interval);
 

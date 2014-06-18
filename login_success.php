@@ -20,8 +20,10 @@
 <div class="4u" align="center"><a href="calls.php"><img src="calls.png"><br>Review 2013-2014 Calls</a></div> 
 <div class="4u" align="center"><a href="statistics.php"><img src="statistics.png"><br>Historical Statistics</a></div>
 </div>
+<!--
 <div class="row">
 <div class="4u" align="center"><a href="wordcloud.php"><img src="wordcloud.png"><br>Your WordCloud</a></div>
+-->
 </div>
 <div class="row"><div class="12u">
 <p align=center>Note: Currently Capricorn includes only HUP, PMC, PAH, and VF interpretations.  <br>CHOP and VA are notably <u>not</u> included.</p>
