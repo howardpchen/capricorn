@@ -40,13 +40,14 @@ include "../capricornLib.php";
 
 $runTimeStart = date_create('NOW');
 $endDTTM = date_create('NOW');
-$interval = new DateInterval("P4D");
+$interval = new DateInterval("P1D");  // Set interval to 1 day.
+//$startDTTM = date_create("2014-6-16"); // Uncomment this if you want to start updating from a specific date in the format of "YYYY-MM-DD H:MM"
 $startDTTM = date_create('NOW');
 $startDTTM->sub($interval);
 
-$count = 0;
+$count = 6;     //Number of days.  Starts counting from 0, so $count=6 --> 1 week.
 
-$resTable = "ResidentIDDefinition";     // MySQL table name
+$resTable = "ResidentIDDefinition";     // MySQL table names
 $examTable = "ExamMeta";
 
 $resdbConn = new mysqli($mysql_host, $mysql_username, $mysql_passwd, $mysql_database);
@@ -96,6 +97,9 @@ while ($count > 0) {
     while($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
         $sqlarray[]=$row;
     }
+
+    echo "Fetched studies, now processing RIS data for prelim time, ResidentYear, and others...<br>\n";
+    flush_buffers();
 
     foreach ($sqlarray as $value) {
         // Right now will skip all studies that do not have a trainee contributer.
@@ -158,10 +162,11 @@ while ($count > 0) {
         }
         $studies[] = $studiesEntry;        
     }
+    echo "Done with RIS, now updating Capricorn...<br>\n";
+    flush_buffers();
 
     foreach ($studies as $s) {
         $sql = "REPLACE INTO $examTable (InternalID, LastName, FirstName, PatientID, TraineeID, OrganizationID, Organization, CompletedDTTM, InquiryDTTM, DraftDTTM, PrelimDTTM, AttendingID, AccessionNumber, ExamCode, ResidentYear) VALUES (\"" . $s['InternalID'] . "\", \"" . $s['LastName'] . "\", \"" . $s['FirstName'] . "\", " . $s['PatientID'] . ", " . $s['TraineeID'] . ", " . $s['OrganizationID'] . ", '" . $s['Organization'] . "', '" . $s['CompletedDTTM']->format('Y-m-d H:i:s') . "', '" . $s['InquiryDTTM'] . "', '" . $s['DraftDTTM'] . "', '" . $s['PrelimDTTM'] . "', " . $s['AttendingID'] . ", \"" . $s['AccessionNumber'] . "\", \"" . $s['ExamCode'] . "\", " . $s['ResidentYear'] . ");";
-        //print_r($sql);
         $resdbConn->query($sql) or die (mysqli_error($resdbConn));
 
         $sql = "REPLACE INTO AttendingIDDefinition (AttendingID, LastName, FirstName) VALUES (" . $s['AttendingID'] . ", \"" . $s['AttnLastName'] . "\", \"" . $s['AttnFirstName']. "\");";
@@ -185,7 +190,6 @@ sqlsrv_close($conn2);
 $runTimeEnd = date_create('NOW');
 $runTime = $runTimeStart->diff($runTimeEnd);
 $runTime = $runTime->format("%h:%i:%s");
-echo "All done. Run time $runTime";
+echo "\n\n\n<br><br><br>All done. Total run time $runTime";
 
 ?>
-
