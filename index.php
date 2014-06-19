@@ -55,7 +55,7 @@ include "capricornLib.php";
                                     </div>
                                     <div class="6u">
                                         <form name="form1" method="post" action="checklogin.php">
-                                        <input name="myusername" placeholder="UPHS Login" class='login' type="text" id="myusername" size="10">&nbsp;
+                                        <input name="myusername" placeholder="Login" class='login' type="text" id="myusername" size="10">&nbsp;
                                         <input name="mypassword" placeholder="Password" class='login' type="password" id="mypassword" size="10">&nbsp;
                                         <input type="submit" value="Go" name="Submit" class="login">
                                         </form>
