@@ -19,6 +19,10 @@
 
 
 -->
+<?php
+include "config/capricornConfig.php";
+include "capricornLib.php";
+?>
 
 <html>
 <head>
@@ -29,7 +33,6 @@
 
 </head>
 <?php
-include "capricornLib.php";
 session_start();
 error_reporting(1);
 $db = new mysqli($mysql_host, $mysql_username, $mysql_passwd, $mysql_database);
@@ -42,20 +45,32 @@ function login($user, $password) {
     global $USE_LDAP;
 
     $result = '';
-    include 'config/ldapconf.php';
+    include 'config/ldapConfig.php';
+
+    ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7); 
+
 
     if (!$USE_LDAP)  {
         return passwordAccepted($password, $user, $db);
     }
-    
+
     // Connect to LDAP service
-    $conn_status = ldap_connect($server, $port);
-    if ($conn_status === FALSE) {
+    if (strpos($ldap['url'], 'ldaps') !== FALSE) {
+        // We have an SSL URL
+        $conn = ldap_connect($ldap['url']);
+        ldap_set_option($conn, LDAP_OPT_REFERRALS, 0);
+        ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
+    } else {
+        $conn = ldap_connect($ldap['server'], $port);
+    }
+
+    if ($conn === FALSE) {
         print_r("Problem connecting");
         return passwordAccepted($password, $user, $db);
     }
+
     // Bind as application
-    $bind_status = ldap_bind($conn_status, $username, $pwd);
+    $bind_status = ldap_bind($conn, $ldap['bind_username'], $ldap['bind_password']);
     if ($bind_status === FALSE) {
         print_r("Problem binding");
         return passwordAccepted($password, $user, $db);
@@ -63,13 +78,13 @@ function login($user, $password) {
     // Find the user's DN
     $attributes = array("displayname","ou");
     $filter = "(&(samaccountName=".$user."))";
-    $search_status = ldap_search($conn_status, $basedn, $filter, $attributes);
+    $search_status = ldap_search($conn, $ldap['basedn'], $filter, $attributes);
     if ($search_status === FALSE) {
         print_r("Problem finding user");
         return passwordAccepted($password, $user, $db);
     }
     // Pull the search results
-    $result = ldap_get_entries($conn_status, $search_status);
+    $result = ldap_get_entries($conn, $search_status);
     if ($result === FALSE) {
         print_r("Problem getting search results");
         return passwordAccepted($password, $user, $db);
@@ -82,15 +97,22 @@ function login($user, $password) {
         return passwordAccepted($password, $user, $db);
     }
     // Authenticate with the newly found DN and user-provided password
-    $auth_status = ldap_bind($conn_status, $userdn, $password);
+    $auth_status = ldap_bind($conn, $userdn, $password);
     if ($auth_status === FALSE) {
         return passwordAccepted($password, $user, $db);
     }
-    // check that user is in Radiology to finally allow login!
-    $OUtoSearch = "OU=Radiology";
-    if (strpos($result[0]['dn'],$OUtoSearch) !== false) {
+
+    // check that user is in required_ou
+    if ($ldap['required_ou'] !== NULL) {
+        if (strpos($result[0]['dn'], $ldap['required_ou']) !== false) {
+            return $result;
+        }        
+    } else {
         return $result;
     }
+
+    // Close the ldap connection since we're done with it
+    ldap_close($conn);
     return passwordAccepted($password, $user, $db);
 }
 
@@ -144,6 +166,8 @@ function getTraineeID($username, $database) {
     $row = $results->fetch_array();
     return $row['TraineeID'];
 }
+
+// The code starts here.
 
 if ((!isset($_POST['myusername']) || !isset($_POST['mypassword'])) && isset($_SESSION['traineeid'])) {
 
