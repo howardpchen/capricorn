@@ -169,7 +169,16 @@ if (isset($_GET['rota'])) {
 <option value=''> All </option>
 
 <?php
-foreach ($examType as $short => $long) {
+
+$examType = getExamCodeData('Type', NULL, 'ORDER BY Type');
+
+foreach ($examType as $type) {
+    $short = $type[0];
+    $long = codeToEnglish($short);
+    if (isset($excludeBrowse))  {
+        // Remove the exam types in the exclude list (under capricornConfig.php)
+        if (in_array($short, $excludeBrowse)) continue;
+    }
     $selected = '';
     if (isset($_GET['mod']) && $_GET['mod'] == $short) $selected = 'selected';
 
@@ -205,4 +214,3 @@ if (isset($_GET['mod']) && $_GET['mod'] != '')  {
 include "footer.php";
 ob_end_flush();
 ?>
-

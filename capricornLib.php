@@ -480,34 +480,6 @@ function flush_buffers(){
  Rotation-Related Functions
  **************************************/
 
-$replaceDict = [ 
-    "CHEST" => "Chest", 
-    "BODY" => "Body",
-    "BABY" => "Babygram",
-    "NEURO" => "Neuro",
-    "CR" => "Radiography",
-    "CT" => "Computed Tomography",
-    "CTA" => "CT Angiography",
-    "DEXA" => "Dual-Energy X-Ray Absorptiometry",
-    "FLUO" => "Fluoroscopy",
-    "FMRI" => "fMRI",
-    "BREAST" => "Breast",
-    "MAMMO" => "Mammography",
-    "MR" => "Magnetic Resonance Imaging",
-    "MRA" => "MR Angiography",
-    "MRV" => "MR Venography",
-    "NM" => "Nuclear Medicine",
-    "PETCT" => "PET/CT",
-    "PET" => "PET (without CT)",
-    "PROCED" => "Procedures",
-    "SPECT" => "SPECT",
-    "SPINE" => "Spine (Neuro or MSK)",
-    "US" => "Ultrasound", 
-    "SCINT" =>"Scintigraphy",
-    "MISC" => "Miscellaneous"
-    ];
-
-
 function codeToEnglish($text) {
     global $replaceDict;
     if (isset($replaceDict[$text])) return $replaceDict[$text];

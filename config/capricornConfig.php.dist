@@ -61,14 +61,40 @@ $graphColor['GI'] = '#008888';
 $graphColor['GU'] = '#880088';
 $graphColor['SPINE'] = '#8888CC';
 
-$examType['CR'] = 'Radiograph';
-$examType['CT'] = 'CT';
-$examType['CTA'] = 'CTA';
-$examType['FLUO'] = 'Fluoroscopy';
-$examType['MAMMO'] = 'Mammography';
-$examType['MR'] = 'MRI';
-$examType['NM'] = 'Nuclear Medicine';
-$examType['US'] = 'Ultrasound';
-$examType['BABY'] = 'Babygram';
+// Dictionary to change shorthand codes to human-friendly text.
+$replaceDict = [ 
+    "CHEST" => "Chest", 
+    "BODY" => "Body",
+    "BABY" => "Babygram",
+    "NEURO" => "Neuro",
+    "CR" => "Radiography",
+    "CT" => "Computed Tomography",
+    "CTA" => "CT Angiography",
+    "DEXA" => "Dual-Energy X-Ray Absorptiometry",
+    "FLUO" => "Fluoroscopy",
+    "FMRI" => "fMRI",
+    "BREAST" => "Breast",
+    "MAMMO" => "Mammography",
+    "MR" => "Magnetic Resonance Imaging",
+    "MRA" => "MR Angiography",
+    "MRV" => "MR Venography",
+    "NM" => "Nuclear Medicine",
+    "PETCT" => "PET/CT",
+    "PET" => "PET (without CT)",
+    "PROCED" => "Procedures",
+    "SPECT" => "SPECT",
+    "SPINE" => "Spine (Neuro or MSK)",
+    "US" => "Ultrasound", 
+    "SCINT" =>"Scintigraphy",
+    "MISC" => "Miscellaneous"
+    ];
+
+
+//Exclude these modalityes on the modality selection under browse function.  All other modalities in Capricorn database will auto populate.
+
+$excludeBrowse = array();
+$excludeBrowse []= "3D";
+$excludeBrowse []= "MISC";
+
 
 ?>

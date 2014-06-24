@@ -1,0 +1,20 @@
+<?php
+
+// YOUR SERVER MUST SUPPORT LDAP PROTOCOL.
+
+$USE_LDAP = true;
+
+// Configuration file for PHP/LDAP authentication
+// Specify *either* $ldap_url OR $server and $port
+// $server and $port can only be used without SSL
+
+$ldap['url'] = '';  // ldaps://servername
+$ldap['server'] = 'myldapserver';
+$ldap['port'] = 389;
+$ldap['basedn'] = "dc=mybasedn";
+$ldap['bind_username'] = "domain\\username";  // domain needed if querying active directory
+$ldap['bind_password'] = "thisismypassword";
+// Set this if you want to additionally check group membership
+$ldap['required_ou'] = NULL;
+
+?>
