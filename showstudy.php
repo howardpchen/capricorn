@@ -1,6 +1,6 @@
 <body>
 <link rel="stylesheet" href="css/style.css" />
-
+<a href="showstudy_excel.php?<?php echo http_build_query($_GET);?>">Export to Excel</a>
 <?php 
 /*
     Capricorn - Open-source analytics tool for radiology residents.
@@ -39,5 +39,4 @@ $results = getTraineeStudiesByDate($startDate->format('Y-m-d'), $endDate->format
 $htmlprint = getResultsHTML($results);
 echo $htmlprint;
 ?>
-
 </body>

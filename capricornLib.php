@@ -829,6 +829,22 @@ function getTraineeStudiesByDate($startDate, $endDate, $section, $type, $notes) 
     return $results;
 }
 
+function getResultsTabDelimited($results)  {
+    $output = "Accession\tLast Name\tFirstName\tDescription\tExam Code\tAttending\tCompletion Time\n";
+    while ($row = $results->fetch_array(MYSQL_NUM))  {
+        foreach($row as $col) {
+            if (is_a($col, "DateTime")){
+                $col = $col->format('Y-m-d H:i:s');
+            }
+            $output .= $col;
+            $output .= "\t";
+
+        }
+        $output .= "\n";
+    }
+    return $output;
+}
+
 function getResultsHTML($results)  {
     $output = "<table class='results'>\n";
     // Header
