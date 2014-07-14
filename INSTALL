@@ -25,11 +25,11 @@ Columns are as follows:
 | ResidentYear    | int(11)     | YES  |     | NULL    |       |
 +-----------------+-------------+------+-----+---------+-------+
 
-In our installation we use tools/updateExam.php to pull from a shadow copy of our RIS database.  You will need to find a similar mechanism to populate this information in your institution.
+In our installation we use tools/updateExam.php to pull from a shadow copy of our RIS database.
+You will need to find a similar mechanism to populate this information in your institution.
 
-Codes in the examcodedefinition table will also need to be loaded from your chargemaster
-
-Make sure to add individual types and their long names to the $examType array in config/capricornConfig.php.
+Codes in the examcodedefinition table will also need to be loaded from your chargemaster.  You will need to assign
+values for Section, Type, to teach exam code.  
 
 examcodedefinition
 +--------------+-------------+------+-----+---------+-------+
@@ -40,18 +40,17 @@ examcodedefinition
 | ExamCode     | varchar(10) | YES  | MUL | NULL    |       |
 | Description  | varchar(73) | YES  |     | NULL    |       |
 | Department   | varchar(10) | YES  |     | NULL    |       |
-| Modality     | varchar(8)  | YES  |     | NULL    |       |
-| BodySite     | varchar(10) | YES  |     | NULL    |       |
-| SubSpecialty | varchar(9)  | YES  |     | NULL    |       |
-| Rotation     | varchar(9)  | YES  |     | NULL    |       |
+| Rotation     | varchar(9)  | YES  | MUL | NULL    |       |
 | Section      | varchar(6)  | YES  |     | NULL    |       |
 | Type         | varchar(6)  | YES  |     | NULL    |       |
 | Notes        | varchar(16) | YES  |     | NULL    |       |
 +--------------+-------------+------+-----+---------+-------+
 
-Although not necessary for function, Capricorn benefits from knowing which rotations each resident was on when the exams were dictated.  In our system, we use QGenda for resident scheduling and have tools/qgendaImporter.php to parse the iCal Schedule downloaded from Qgenda.com into the residentRotation table.  
+With reagards to pairing exams to rotations: Capricorn only needs to know the date and time when the exam was completed.  If rotations are known, then it will cross-reference.
 
-In order for qgendaImporter to work correctly, the qGendaName must be populated in the residentiddefinition table.
+In our system, we use Qgenda for resdient scheduling and have tools/qgendaImporter.php to parse the iCal Schedule downloaded from Qgenda.com into the residentRotation table.
+
+In order for qgendaImporter to work correctly, the qGendaName must be populated in the residentiddescription table.
 
 qgendaImporter works by adding data to the residentrotationraw table and then parsing it into the residentrotation table.
 
@@ -65,10 +64,9 @@ residentrotation
 | RotationEndDate   | date        | NO   |     | NULL    |       |
 +-------------------+-------------+------+-----+---------+-------+
 
-
 The Resident IDs table needs to be populated.  We use the same value for TraineeID as our RIS, but you may want to map to another standard.
 
-residentiddefinition
+residentiddescription
 +------------------+-------------+------+-----+---------+-------+
 | Field            | Type        | Null | Key | Default | Extra |
 +------------------+-------------+------+-----+---------+-------+
@@ -81,7 +79,7 @@ residentiddefinition
 | QGendaName       | varchar(25) | YES  |     | NULL    |       |
 +------------------+-------------+------+-----+---------+-------+
 
-The following table is used for display of attending names.  As Capricorn adds new studies, it will look up the studys' attending name from RIS and add here.  This way new attendings will be automatically added as soon as they interprete a study.
+The following table is used for display of attending names.  This table will need to be updated with your update mechanism to stay current.
 
 attendingiddefinition
 +-------------+-------------+------+-----+---------+-------+
@@ -91,6 +89,22 @@ attendingiddefinition
 | LastName    | varchar(45) | NO   |     | NULL    |       |
 | FirstName   | varchar(45) | NO   |     | NULL    |       |
 +-------------+-------------+------+-----+---------+-------+
+
+The residentcounts table is determined purely based on Capricorn's internal calculations.
+
+residentcounts
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| UniqueID     | varchar(40) | NO   | PRI | NULL    |       |
+| TraineeID    | int(11)     | NO   |     | NULL    |       |
+| ResidentYear | int(2)      | NO   |     | NULL    |       |
+| CountDT      | date        | NO   |     | NULL    |       |
+| Section      | varchar(6)  | NO   |     | NULL    |       |
+| Type         | varchar(6)  | NO   |     | NULL    |       |
+| Notes        | varchar(16) | NO   |     | NULL    |       |
+| Count        | int(7)      | NO   |     | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
 
 Capricorn handles logins in one of two ways.  First by registration.  New users can register by going through create_account.html, which will run their name in Capricorn to ensure they are a current resident, then use find_user.php and add_user.php to add an entry into LoginMember table.
 
@@ -110,6 +124,6 @@ loginmember
 Part B - Web page display portal configuration
 1. Edit capricornConfig.php.dist with settings for your site and save-as capricornConfig.php
 2. Edit ldapconf.php.dist with settings for your site and save-as ldapconfig.php
-3. displayReport.php can be customized to allow for viewing reports at your local site.  Report text is not stored in the capricorn database.
 
 Part C - 
+3. displayReport.php can be customized to allow for viewing reports.  Report text is not stored in the capricorn database.
