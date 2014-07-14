@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS `residentcounts` (
 CREATE TABLE IF NOT EXISTS `residentiddefinition` (
   `TraineeID` int(11) NOT NULL,
   `FirstName` varchar(25) NOT NULL,
-  `MiddleName` varchar(25) NOT NULL DEFAULT '',
+  `MiddleName` varchar(25) NULL DEFAULT '',
   `LastName` varchar(25) NOT NULL,
   `IsCurrentTrainee` varchar(5) NOT NULL DEFAULT 'N',
   `StartDate` date NOT NULL,
