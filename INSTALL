@@ -74,7 +74,7 @@ residentiddescription
 | FirstName        | varchar(25) | NO   |     | NULL    |       |
 | MiddleName       | varchar(25) | NO   |     |         |       |
 | LastName         | varchar(25) | NO   |     | NULL    |       |
-| IsCurrentTrainee | varchar(5)  | NO   |     | N       |       |
+| IsCurrentTrainee | bool        | NO   |     | 0       |       |
 | StartDate        | date        | NO   |     | NULL    |       |
 | QGendaName       | varchar(25) | YES  |     | NULL    |       |
 +------------------+-------------+------+-----+---------+-------+

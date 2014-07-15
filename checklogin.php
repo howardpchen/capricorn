@@ -203,7 +203,7 @@ else {
             $firstmiddle = explode(' ', $fullname[1]);
             $firstname = $firstmiddle[0];
             //echo $lastname .  "---" . $firstname . "<BR>";
-            $sqlquery = "SELECT COUNT(*) as count FROM ResidentIDDefinition WHERE FirstName LIKE \"$firstname\" AND LastName LIKE \"$lastname\" AND IsCurrentTrainee='Y';";       
+            $sqlquery = "SELECT COUNT(*) as count FROM ResidentIDDefinition WHERE FirstName LIKE \"$firstname\" AND LastName LIKE \"$lastname\" AND IsCurrentTrainee=1;";       
 
             $results = $db->query($sqlquery);
             $row = $results->fetch_array();

@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `residentiddefinition` (
   `FirstName` varchar(25) NOT NULL,
   `MiddleName` varchar(25) NULL DEFAULT '',
   `LastName` varchar(25) NOT NULL,
-  `IsCurrentTrainee` varchar(5) NOT NULL DEFAULT 'N',
+  `IsCurrentTrainee` bool NOT NULL DEFAULT 'N',
   `StartDate` date NOT NULL,
   `QGendaName` varchar(25) DEFAULT NULL,
   PRIMARY KEY (`TraineeID`)

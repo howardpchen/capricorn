@@ -39,7 +39,7 @@ $myresidentid = -1;
 
 // $sqlquery = "SELECT ResidentFirstName, ResidentLastName, ResidentID FROM ResidentIDDefinition WHERE ResidentFirstName=\"$myfirstname\" AND ResidentLastName=\"$mylastname\";";
 
-$sqlquery = "SELECT COUNT(*) as count FROM $res_tbl_name WHERE FirstName LIKE \"$myfirstname\" AND LastName LIKE \"$mylastname\" AND IsCurrentTrainee='Y';";
+$sqlquery = "SELECT COUNT(*) as count FROM $res_tbl_name WHERE FirstName LIKE \"$myfirstname\" AND LastName LIKE \"$mylastname\" AND IsCurrentTrainee=1;";
 
 $results = $db->query($sqlquery);
 
