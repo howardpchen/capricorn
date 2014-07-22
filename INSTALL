@@ -2,7 +2,7 @@ Capricorn Installation Instructions
 
 Part A - Getting Data into Capricorn
 
-Data from your RIS or data warehouse is loaded into our exammeta table.
+Data from your RIS or data warehouse is loaded into our ExamMeta table.
 
 Columns are as follows:
 +-----------------+-------------+------+-----+---------+-------+

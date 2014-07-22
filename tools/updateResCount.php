@@ -59,7 +59,7 @@ foreach ($smn as $codeData) {
         $startDate = $startYear . "-07-01";
         $startYear++;
         $endDate = $startYear . "-07-01";
-        $sql = "SELECT em.InternalID,TraineeID,ResidentYear FROM exammeta as em INNER JOIN ExamCodeDefinition as ecd on em.ExamCode=ecd.ExamCode AND em.Organization=ecd.ORG WHERE ecd.Type='$type' AND ecd.Section='$section' AND ecd.Notes='$notes' AND CompletedDTTM > '$startDate' AND CompletedDTTM < '$endDate'";
+        $sql = "SELECT em.InternalID,TraineeID,ResidentYear FROM ExamMeta as em INNER JOIN ExamCodeDefinition as ecd on em.ExamCode=ecd.ExamCode AND em.Organization=ecd.ORG WHERE ecd.Type='$type' AND ecd.Section='$section' AND ecd.Notes='$notes' AND CompletedDTTM > '$startDate' AND CompletedDTTM < '$endDate'";
 
         $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
         $results = $results->fetch_all(MYSQL_ASSOC);

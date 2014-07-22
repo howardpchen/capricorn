@@ -45,7 +45,7 @@ $reportText = "";
 $conn2 = sqlsrv_connect($RISName, $connectionInfo);
 $table1 = "vusrExamDiagnosticReportText";
 
-$sql = "select AccessionNumber from `exammeta` WHERE TraineeID='" . $_SESSION['traineeid'] . "' ORDER BY CompletedDTTM DESC LIMIT 0, 10";
+$sql = "select AccessionNumber from `ExamMeta` WHERE TraineeID='" . $_SESSION['traineeid'] . "' ORDER BY CompletedDTTM DESC LIMIT 0, 10";
 
 $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
 $results = $results->fetch_all();

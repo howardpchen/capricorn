@@ -45,7 +45,7 @@ INSERT INTO `ExamCodeDefinition` VALUES ('1','hosp','RPID2503','XR CHEST 2 VIEWS
 /*!40000 ALTER TABLE `ExamCodeDefinition` ENABLE KEYS */;
 UNLOCK TABLES;
 
-CREATE TABLE IF NOT EXISTS `exammeta` (
+CREATE TABLE IF NOT EXISTS `ExamMeta` (
   `InternalID` varchar(30) NOT NULL,
   `AccessionNumber` varchar(16) DEFAULT NULL,
   `LastName` varchar(25) NOT NULL,
@@ -67,13 +67,13 @@ CREATE TABLE IF NOT EXISTS `exammeta` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `exammeta`
+-- Dumping data for table `ExamMeta`
 --
 
-LOCK TABLES `exammeta` WRITE;
-/*!40000 ALTER TABLE `exammeta` DISABLE KEYS */;
-INSERT INTO `exammeta` VALUES ('1','1234','Flintstone','Wilma',120,'RPID2503',1,1,1,'hosp','2014-06-01 17:00:00','2014-06-01 17:05:00','2014-06-01 17:10:00','2014-06-01 17:11:02',1),('2','1234','Flintstone','Wilma',120,'RPID2503',1,1,1,'hosp','2014-06-02 17:00:00','2014-06-02 17:05:00','2014-06-02 17:10:00','2014-06-02 17:11:02',1),('3','1234','Flintstone','Wilma',120,'RPID2503',1,1,1,'hosp','2014-06-02 19:00:00','2014-06-02 19:05:00','2014-06-02 19:10:00','2014-06-02 19:11:02',1),('4','1234','Flintstone','Wilma',120,'RPID2503',1,1,1,'hosp','2014-06-03 10:30:00','2014-06-03 10:35:00','2014-06-03 10:40:00','2014-06-03 19:41:02',1);
-/*!40000 ALTER TABLE `exammeta` ENABLE KEYS */;
+LOCK TABLES `ExamMeta` WRITE;
+/*!40000 ALTER TABLE `ExamMeta` DISABLE KEYS */;
+INSERT INTO `ExamMeta` VALUES ('1','1234','Flintstone','Wilma',120,'RPID2503',1,1,1,'hosp','2014-06-01 17:00:00','2014-06-01 17:05:00','2014-06-01 17:10:00','2014-06-01 17:11:02',1),('2','1234','Flintstone','Wilma',120,'RPID2503',1,1,1,'hosp','2014-06-02 17:00:00','2014-06-02 17:05:00','2014-06-02 17:10:00','2014-06-02 17:11:02',1),('3','1234','Flintstone','Wilma',120,'RPID2503',1,1,1,'hosp','2014-06-02 19:00:00','2014-06-02 19:05:00','2014-06-02 19:10:00','2014-06-02 19:11:02',1),('4','1234','Flintstone','Wilma',120,'RPID2503',1,1,1,'hosp','2014-06-03 10:30:00','2014-06-03 10:35:00','2014-06-03 10:40:00','2014-06-03 19:41:02',1);
+/*!40000 ALTER TABLE `ExamMeta` ENABLE KEYS */;
 UNLOCK TABLES;
 
 CREATE TABLE IF NOT EXISTS `loginmember` (
