@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS `ResidentRotation` (
   `RotationEndDate` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS `ResidentRotationraw` (
+CREATE TABLE IF NOT EXISTS `ResidentRotationRaw` (
   `UniqueID` varchar(40) NOT NULL,
   `TraineeID` int(11) NOT NULL,
   `Rotation` varchar(25) NOT NULL,

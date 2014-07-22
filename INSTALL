@@ -52,7 +52,7 @@ In our system, we use Qgenda for resdient scheduling and have tools/qgendaImport
 
 In order for qgendaImporter to work correctly, the qGendaName must be populated in the residentiddescription table.
 
-qgendaImporter works by adding data to the ResidentRotationraw table and then parsing it into the ResidentRotation table.
+qgendaImporter works by adding data to the ResidentRotationRaw table and then parsing it into the ResidentRotation table.
 
 ResidentRotation
 +-------------------+-------------+------+-----+---------+-------+

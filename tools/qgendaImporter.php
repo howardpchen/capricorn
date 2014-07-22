@@ -82,14 +82,14 @@ foreach ($events as $e) {
     if ($first) {
         // print_r($startDate);
         // delete entries after the first date in the subscription.
-        $sql = "DELETE from ResidentRotationraw WHERE RotationStartDate > '$startDate';";
+        $sql = "DELETE from ResidentRotationRaw WHERE RotationStartDate > '$startDate';";
         $resdbConn->query($sql) or die (mysqli_error($resdbConn));
         $first = False;
     }
 
     if (isset($traineeIDMap[$trnee])) $trnee = $traineeIDMap[$trnee];
     else continue;
-    $sql = "REPLACE INTO ResidentRotationraw (UniqueID,TraineeID, Rotation, RotationStartDate, RotationEndDate) VALUES ('$uid', $trnee, '$rotation', '$startDate', '$endDate')";
+    $sql = "REPLACE INTO ResidentRotationRaw (UniqueID,TraineeID, Rotation, RotationStartDate, RotationEndDate) VALUES ('$uid', $trnee, '$rotation', '$startDate', '$endDate')";
     $resdbConn->query($sql) or die (mysqli_error($resdbConn));
 }
 
@@ -100,7 +100,7 @@ $resdbConn->query($sql) or die (mysqli_error($resdbConn));
 foreach ($traineeIDMap as $qg=>$traineeID) {
 //if (True) {
     //$traineeID = 65596342;
-    $sql = "SELECT * FROM ResidentRotationraw WHERE TraineeID=$traineeID ORDER BY RotationStartDate;";
+    $sql = "SELECT * FROM ResidentRotationRaw WHERE TraineeID=$traineeID ORDER BY RotationStartDate;";
     $result = array();
     if ($result = $resdbConn->query($sql)) {
         $result = $result->fetch_all(MYSQL_ASSOC);
