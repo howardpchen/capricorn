@@ -76,7 +76,7 @@ INSERT INTO `ExamMeta` VALUES ('1','1234','Flintstone','Wilma',120,'RPID2503',1,
 /*!40000 ALTER TABLE `ExamMeta` ENABLE KEYS */;
 UNLOCK TABLES;
 
-CREATE TABLE IF NOT EXISTS `loginmember` (
+CREATE TABLE IF NOT EXISTS `LoginMember` (
   `TraineeID` int(11) NOT NULL,
   `Username` varchar(25) NOT NULL,
   `PasswordHash` text NOT NULL,
@@ -84,13 +84,13 @@ CREATE TABLE IF NOT EXISTS `loginmember` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `loginmember`
+-- Dumping data for table `LoginMember`
 --
 
-LOCK TABLES `loginmember` WRITE;
-/*!40000 ALTER TABLE `loginmember` DISABLE KEYS */;
-INSERT INTO `loginmember` VALUES (1,'fbueler','$2BTThe03q1l2');
-/*!40000 ALTER TABLE `loginmember` ENABLE KEYS */;
+LOCK TABLES `LoginMember` WRITE;
+/*!40000 ALTER TABLE `LoginMember` DISABLE KEYS */;
+INSERT INTO `LoginMember` VALUES (1,'fbueler','$2BTThe03q1l2');
+/*!40000 ALTER TABLE `LoginMember` ENABLE KEYS */;
 UNLOCK TABLES;
 
 CREATE TABLE IF NOT EXISTS `residentcounts` (
