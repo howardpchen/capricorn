@@ -501,7 +501,7 @@ Also include start date and end dates.
 */
 function getRotationsByTrainee($residentID) {
     global $resdbConn;
-    $sql = "SELECT DISTINCT * FROM residentrotation WHERE TraineeID=$residentID ORDER BY RotationStartDate;";
+    $sql = "SELECT DISTINCT * FROM ResidentRotation WHERE TraineeID=$residentID ORDER BY RotationStartDate;";
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
     $results = $results->fetch_all(MYSQL_ASSOC);
     return $results;

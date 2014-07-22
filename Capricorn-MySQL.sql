@@ -126,14 +126,14 @@ INSERT INTO `ResidentIDDefinition` VALUES (1,'Ferris','D','Bueller','Y','2013-07
 /*!40000 ALTER TABLE `ResidentIDDefinition` ENABLE KEYS */;
 UNLOCK TABLES;
 
-CREATE TABLE IF NOT EXISTS `residentrotation` (
+CREATE TABLE IF NOT EXISTS `ResidentRotation` (
   `TraineeID` int(11) NOT NULL,
   `Rotation` varchar(25) NOT NULL,
   `RotationStartDate` date NOT NULL,
   `RotationEndDate` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS `residentrotationraw` (
+CREATE TABLE IF NOT EXISTS `ResidentRotationraw` (
   `UniqueID` varchar(40) NOT NULL,
   `TraineeID` int(11) NOT NULL,
   `Rotation` varchar(25) NOT NULL,
