@@ -818,7 +818,7 @@ function getTraineeStudiesByDate($startDate, $endDate, $section, $type, $notes) 
     global $resdbConn;
     // The dates are in plain text format.
 
-	$sqlquery = "SELECT em.AccessionNumber, em.LastName, em.FirstName, ecd.Description, ecd.ExamCode, aid.LastName, CompletedDTTM FROM `exammeta` as em INNER JOIN `examcodedefinition` as ecd ON (em.ExamCode = ecd.ExamCode AND ecd.ORG = em.Organization) INNER JOIN `attendingiddefinition` as aid ON (em.AttendingID = aid.AttendingID) WHERE`CompletedDTTM` >= '$startDate' AND `CompletedDTTM` < '$endDate' AND TraineeID=" . $_SESSION['traineeid'] . " AND ecd.Type='$type' AND ecd.Section='$section'";
+	$sqlquery = "SELECT em.AccessionNumber, em.LastName, em.FirstName, ecd.Description, ecd.ExamCode, aid.LastName, CompletedDTTM FROM `exammeta` as em INNER JOIN `examcodedefinition` as ecd ON (em.ExamCode = ecd.ExamCode AND ecd.ORG = em.Organization) INNER JOIN `AttendingIDDefinition` as aid ON (em.AttendingID = aid.AttendingID) WHERE`CompletedDTTM` >= '$startDate' AND `CompletedDTTM` < '$endDate' AND TraineeID=" . $_SESSION['traineeid'] . " AND ecd.Type='$type' AND ecd.Section='$section'";
     if ($notes != "") {
         $sql = $sql . " AND ecd.Notes LIKE '$notes'";
     }

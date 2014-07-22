@@ -81,7 +81,7 @@ residentiddescription
 
 The following table is used for display of attending names.  This table will need to be updated with your update mechanism to stay current.
 
-attendingiddefinition
+AttendingIDDefinition
 +-------------+-------------+------+-----+---------+-------+
 | Field       | Type        | Null | Key | Default | Extra |
 +-------------+-------------+------+-----+---------+-------+

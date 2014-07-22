@@ -3,7 +3,7 @@ SET time_zone = "+00:00";
 CREATE DATABASE IF NOT EXISTS `capricorn` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 USE `capricorn`;
 
-CREATE TABLE IF NOT EXISTS `attendingiddefinition` (
+CREATE TABLE IF NOT EXISTS `AttendingIDDefinition` (
   `AttendingID` int(11) NOT NULL,
   `LastName` varchar(45) NOT NULL,
   `FirstName` varchar(45) NOT NULL,
@@ -11,13 +11,13 @@ CREATE TABLE IF NOT EXISTS `attendingiddefinition` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `attendingiddefinition`
+-- Dumping data for table `AttendingIDDefinition`
 --
 
-LOCK TABLES `attendingiddefinition` WRITE;
-/*!40000 ALTER TABLE `attendingiddefinition` DISABLE KEYS */;
-INSERT INTO `attendingiddefinition` VALUES (1,'Stein','Ben');
-/*!40000 ALTER TABLE `attendingiddefinition` ENABLE KEYS */;
+LOCK TABLES `AttendingIDDefinition` WRITE;
+/*!40000 ALTER TABLE `AttendingIDDefinition` DISABLE KEYS */;
+INSERT INTO `AttendingIDDefinition` VALUES (1,'Stein','Ben');
+/*!40000 ALTER TABLE `AttendingIDDefinition` ENABLE KEYS */;
 UNLOCK TABLES;
 
 CREATE TABLE IF NOT EXISTS `examcodedefinition` (
