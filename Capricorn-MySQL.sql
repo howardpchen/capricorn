@@ -93,7 +93,7 @@ INSERT INTO `LoginMember` VALUES (1,'fbueler','$2BTThe03q1l2');
 /*!40000 ALTER TABLE `LoginMember` ENABLE KEYS */;
 UNLOCK TABLES;
 
-CREATE TABLE IF NOT EXISTS `residentcounts` (
+CREATE TABLE IF NOT EXISTS `ResidentCounts` (
   `UniqueID` varchar(40) NOT NULL,
   `TraineeID` int(11) NOT NULL,
   `ResidentYear` int(2) NOT NULL,

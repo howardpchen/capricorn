@@ -22,7 +22,7 @@ include "../capricornLib.php";
 
 
 /******************************************
-Run this once a year to update the ResidentYear counts (residentcounts)
+Run this once a year to update the ResidentYear counts (ResidentCounts)
 Capricorn will calculate in real time counts since the most recent July 1, 
 And use this table for previous years' counts.
 
@@ -79,7 +79,7 @@ foreach ($smn as $codeData) {
             if ($ry == 99) continue;
             foreach ($r as $trID=>$cnt) {
                 $uid = hash('md5', $trID . $ry . $startDate . $section . $type . $notes);
-                $sql = "REPLACE INTO residentcounts (UniqueID, TraineeID, ResidentYear, CountDT, Section, Type, Notes, Count) VALUES ('$uid', $trID, $ry, '$startDate','$section', '$type', '$notes', $cnt)";
+                $sql = "REPLACE INTO ResidentCounts (UniqueID, TraineeID, ResidentYear, CountDT, Section, Type, Notes, Count) VALUES ('$uid', $trID, $ry, '$startDate','$section', '$type', '$notes', $cnt)";
                 echo "<!-- $sql -->\n";
                 $resdbConn->query($sql) or die (mysqli_error($resdbConn));
             }

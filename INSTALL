@@ -90,9 +90,9 @@ AttendingIDDefinition
 | FirstName   | varchar(45) | NO   |     | NULL    |       |
 +-------------+-------------+------+-----+---------+-------+
 
-The residentcounts table is determined purely based on Capricorn's internal calculations.
+The ResidentCounts table is determined purely based on Capricorn's internal calculations.
 
-residentcounts
+ResidentCounts
 +--------------+-------------+------+-----+---------+-------+
 | Field        | Type        | Null | Key | Default | Extra |
 +--------------+-------------+------+-----+---------+-------+

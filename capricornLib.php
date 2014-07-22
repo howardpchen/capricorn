@@ -306,7 +306,7 @@ function getLoginUserCount($section, $type, $note="") {
     $currentYear = $results[0]['StartDate'];
     $tempSum=0;
 
-    $sql = "SELECT Count, CountDT FROM residentcounts WHERE TraineeID=$tid AND Type='$type' AND Section='$section'";
+    $sql = "SELECT Count, CountDT FROM ResidentCounts WHERE TraineeID=$tid AND Type='$type' AND Section='$section'";
     if ($note != "") {
         $sql = $sql . " AND Notes LIKE '$note'";
     }
@@ -381,7 +381,7 @@ function getOverallCountArray($pgy, $section, $type, $note="", $startDate="2008-
     }
     $sql = $sql . " AND em.CompletedDTTM > '" . $startDate . "' AND em.CompletedDTTM < '" . $endDate . "'";
     */
-    $sql = "SELECT TraineeID, Count FROM residentcounts WHERE ResidentYear=". $pgy . " AND Type='$type' AND Section='$section'";
+    $sql = "SELECT TraineeID, Count FROM ResidentCounts WHERE ResidentYear=". $pgy . " AND Type='$type' AND Section='$section'";
     if ($note != "") {
         $sql = $sql . " AND Notes LIKE '$note'";
     }
