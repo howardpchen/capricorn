@@ -22,11 +22,11 @@ include "../capricornLib.php";
 
 
 /******************************************
-Run this once a year to update the ResidentYear counts (residentcounts)
+Run this once a year to update the ResidentYear counts (ResidentCounts)
 Capricorn will calculate in real time counts since the most recent July 1, 
 And use this table for previous years' counts.
 
-Also run this script when the examcodedefinition changes
+Also run this script when the ExamCodeDefinition changes
 
 If $startFromYear and $endAtYear is set too aggressively, the script 
 may run for longer than your server allows and time out.  In those 
@@ -59,7 +59,7 @@ foreach ($smn as $codeData) {
         $startDate = $startYear . "-07-01";
         $startYear++;
         $endDate = $startYear . "-07-01";
-        $sql = "SELECT em.InternalID,TraineeID,ResidentYear FROM exammeta as em INNER JOIN examcodedefinition as ecd on em.ExamCode=ecd.ExamCode AND em.Organization=ecd.ORG WHERE ecd.Type='$type' AND ecd.Section='$section' AND ecd.Notes='$notes' AND CompletedDTTM > '$startDate' AND CompletedDTTM < '$endDate'";
+        $sql = "SELECT em.InternalID,TraineeID,ResidentYear FROM ExamMeta as em INNER JOIN ExamCodeDefinition as ecd on em.ExamCode=ecd.ExamCode AND em.Organization=ecd.ORG WHERE ecd.Type='$type' AND ecd.Section='$section' AND ecd.Notes='$notes' AND CompletedDTTM > '$startDate' AND CompletedDTTM < '$endDate'";
 
         $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
         $results = $results->fetch_all(MYSQL_ASSOC);
@@ -79,7 +79,7 @@ foreach ($smn as $codeData) {
             if ($ry == 99) continue;
             foreach ($r as $trID=>$cnt) {
                 $uid = hash('md5', $trID . $ry . $startDate . $section . $type . $notes);
-                $sql = "REPLACE INTO residentcounts (UniqueID, TraineeID, ResidentYear, CountDT, Section, Type, Notes, Count) VALUES ('$uid', $trID, $ry, '$startDate','$section', '$type', '$notes', $cnt)";
+                $sql = "REPLACE INTO ResidentCounts (UniqueID, TraineeID, ResidentYear, CountDT, Section, Type, Notes, Count) VALUES ('$uid', $trID, $ry, '$startDate','$section', '$type', '$notes', $cnt)";
                 echo "<!-- $sql -->\n";
                 $resdbConn->query($sql) or die (mysqli_error($resdbConn));
             }

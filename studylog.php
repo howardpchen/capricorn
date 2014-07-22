@@ -99,7 +99,7 @@ END;
 function displayGraph() {
     global $resdbConn;
 
-	$sql = "SELECT em.AccessionNumber, ecd.Description, aid.LastName as 'Attending', ecd.Section, ecd.Type, CompletedDTTM FROM `exammeta` as em INNER JOIN `examcodedefinition` as ecd ON (em.ExamCode = ecd.ExamCode AND ecd.ORG = em.Organization) INNER JOIN `attendingiddefinition` as aid ON (em.AttendingID = aid.AttendingID) WHERE TraineeID=" . $_SESSION['traineeid'] . " ORDER BY em.CompletedDTTM";
+	$sql = "SELECT em.AccessionNumber, ecd.Description, aid.LastName as 'Attending', ecd.Section, ecd.Type, CompletedDTTM FROM `ExamMeta` as em INNER JOIN `ExamCodeDefinition` as ecd ON (em.ExamCode = ecd.ExamCode AND ecd.ORG = em.Organization) INNER JOIN `AttendingIDDefinition` as aid ON (em.AttendingID = aid.AttendingID) WHERE TraineeID=" . $_SESSION['traineeid'] . " ORDER BY em.CompletedDTTM";
 
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
 

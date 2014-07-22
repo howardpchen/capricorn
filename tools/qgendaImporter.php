@@ -82,25 +82,25 @@ foreach ($events as $e) {
     if ($first) {
         // print_r($startDate);
         // delete entries after the first date in the subscription.
-        $sql = "DELETE from residentrotationraw WHERE RotationStartDate > '$startDate';";
+        $sql = "DELETE from ResidentRotationRaw WHERE RotationStartDate > '$startDate';";
         $resdbConn->query($sql) or die (mysqli_error($resdbConn));
         $first = False;
     }
 
     if (isset($traineeIDMap[$trnee])) $trnee = $traineeIDMap[$trnee];
     else continue;
-    $sql = "REPLACE INTO residentrotationraw (UniqueID,TraineeID, Rotation, RotationStartDate, RotationEndDate) VALUES ('$uid', $trnee, '$rotation', '$startDate', '$endDate')";
+    $sql = "REPLACE INTO ResidentRotationRaw (UniqueID,TraineeID, Rotation, RotationStartDate, RotationEndDate) VALUES ('$uid', $trnee, '$rotation', '$startDate', '$endDate')";
     $resdbConn->query($sql) or die (mysqli_error($resdbConn));
 }
 
 echo "Done updating raw data.  Now calculating rotations.<br>";
-$sql = "DELETE FROM `residentrotation` WHERE 1";
+$sql = "DELETE FROM `ResidentRotation` WHERE 1";
 $resdbConn->query($sql) or die (mysqli_error($resdbConn));
 
 foreach ($traineeIDMap as $qg=>$traineeID) {
 //if (True) {
     //$traineeID = 65596342;
-    $sql = "SELECT * FROM residentrotationraw WHERE TraineeID=$traineeID ORDER BY RotationStartDate;";
+    $sql = "SELECT * FROM ResidentRotationRaw WHERE TraineeID=$traineeID ORDER BY RotationStartDate;";
     $result = array();
     if ($result = $resdbConn->query($sql)) {
         $result = $result->fetch_all(MYSQL_ASSOC);
@@ -128,7 +128,7 @@ foreach ($traineeIDMap as $qg=>$traineeID) {
             $d2 = date_create($r['RotationStartDate']);
             $elapsed = $d1->diff($d2);
             if ($elapsed->d > 2 || in_array($rot, $singleDayCalls)) {
-                $sql = "INSERT INTO residentrotation (TraineeID, Rotation, RotationStartDate, RotationEndDate) VALUES ($traineeID, '$rot', '$currentStartDate[$rot]', '$currentEndDate[$rot]')";
+                $sql = "INSERT INTO ResidentRotation (TraineeID, Rotation, RotationStartDate, RotationEndDate) VALUES ($traineeID, '$rot', '$currentStartDate[$rot]', '$currentEndDate[$rot]')";
                 $resdbConn->query($sql) or die (mysqli_error($resdbConn));
                 unset($currentStartDate[$rot]);
                 unset($currentEndDate[$rot]);
@@ -136,7 +136,7 @@ foreach ($traineeIDMap as $qg=>$traineeID) {
         }
     }
     foreach ($currentEndDate as $rot=>$edate) {
-        $sql = "INSERT INTO residentrotation (TraineeID, Rotation, RotationStartDate, RotationEndDate) VALUES ($traineeID, '$rot', '$currentStartDate[$rot]', '$currentEndDate[$rot]')";
+        $sql = "INSERT INTO ResidentRotation (TraineeID, Rotation, RotationStartDate, RotationEndDate) VALUES ($traineeID, '$rot', '$currentStartDate[$rot]', '$currentEndDate[$rot]')";
         $resdbConn->query($sql) or die (mysqli_error($resdbConn));
         unset($currentStartDate[$rot]);
         unset($currentEndDate[$rot]);

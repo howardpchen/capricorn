@@ -43,7 +43,7 @@ See the resident view for (opens new windows): <form target=_blank action="<?php
 <select name='changeid'>
 <?php
 
-$sql = "SELECT TraineeID, LastName, FirstName FROM `residentiddefinition` WHERE IsCurrentTrainee=1 ORDER BY StartDate ASC";
+$sql = "SELECT TraineeID, LastName, FirstName FROM `ResidentIDDefinition` WHERE IsCurrentTrainee=1 ORDER BY StartDate ASC";
 
 $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
 $results = $results->fetch_all(MYSQL_ASSOC);

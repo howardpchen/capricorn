@@ -2,7 +2,7 @@ Capricorn Installation Instructions
 
 Part A - Getting Data into Capricorn
 
-Data from your RIS or data warehouse is loaded into our exammeta table.
+Data from your RIS or data warehouse is loaded into our ExamMeta table.
 
 Columns are as follows:
 +-----------------+-------------+------+-----+---------+-------+
@@ -28,10 +28,10 @@ Columns are as follows:
 In our installation we use tools/updateExam.php to pull from a shadow copy of our RIS database.
 You will need to find a similar mechanism to populate this information in your institution.
 
-Codes in the examcodedefinition table will also need to be loaded from your chargemaster.  You will need to assign
+Codes in the ExamCodeDefinition table will also need to be loaded from your chargemaster.  You will need to assign
 values for Section, Type, to teach exam code.  
 
-examcodedefinition
+ExamCodeDefinition
 +--------------+-------------+------+-----+---------+-------+
 | Field        | Type        | Null | Key | Default | Extra |
 +--------------+-------------+------+-----+---------+-------+
@@ -48,13 +48,13 @@ examcodedefinition
 
 With reagards to pairing exams to rotations: Capricorn only needs to know the date and time when the exam was completed.  If rotations are known, then it will cross-reference.
 
-In our system, we use Qgenda for resdient scheduling and have tools/qgendaImporter.php to parse the iCal Schedule downloaded from Qgenda.com into the residentRotation table.
+In our system, we use Qgenda for resdient scheduling and have tools/qgendaImporter.php to parse the iCal Schedule downloaded from Qgenda.com into the ResidentRotation table.
 
 In order for qgendaImporter to work correctly, the qGendaName must be populated in the residentiddescription table.
 
-qgendaImporter works by adding data to the residentrotationraw table and then parsing it into the residentrotation table.
+qgendaImporter works by adding data to the ResidentRotationRaw table and then parsing it into the ResidentRotation table.
 
-residentrotation
+ResidentRotation
 +-------------------+-------------+------+-----+---------+-------+
 | Field             | Type        | Null | Key | Default | Extra |
 +-------------------+-------------+------+-----+---------+-------+
@@ -81,7 +81,7 @@ residentiddescription
 
 The following table is used for display of attending names.  This table will need to be updated with your update mechanism to stay current.
 
-attendingiddefinition
+AttendingIDDefinition
 +-------------+-------------+------+-----+---------+-------+
 | Field       | Type        | Null | Key | Default | Extra |
 +-------------+-------------+------+-----+---------+-------+
@@ -90,9 +90,9 @@ attendingiddefinition
 | FirstName   | varchar(45) | NO   |     | NULL    |       |
 +-------------+-------------+------+-----+---------+-------+
 
-The residentcounts table is determined purely based on Capricorn's internal calculations.
+The ResidentCounts table is determined purely based on Capricorn's internal calculations.
 
-residentcounts
+ResidentCounts
 +--------------+-------------+------+-----+---------+-------+
 | Field        | Type        | Null | Key | Default | Extra |
 +--------------+-------------+------+-----+---------+-------+
@@ -112,7 +112,7 @@ Alternatively, Capricorn supports LDAP, which allows the user to simply use thei
 
 One more caveat: TraineeID 99999999 is an administrative user.  An account associated with this TraineeID logs into admin/index.php instead of login_success.php.  Generally this should be a LoginMember entry.  An easy way is just to define this user in ResidentIDDefinition, then go through create_account.html to create a password for it.
 
-loginmember
+LoginMember
 +-------------+-------------+------+-----+---------+-------+
 | Field       | Type        | Null | Key | Default | Extra |
 +-------------+-------------+------+-----+---------+-------+
