@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS `ResidentCounts` (
   PRIMARY KEY (`UniqueID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS `residentiddefinition` (
+CREATE TABLE IF NOT EXISTS `ResidentIDDefinition` (
   `TraineeID` int(11) NOT NULL,
   `FirstName` varchar(25) NOT NULL,
   `MiddleName` varchar(25) NULL DEFAULT '',
@@ -117,13 +117,13 @@ CREATE TABLE IF NOT EXISTS `residentiddefinition` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `residentiddefinition`
+-- Dumping data for table `ResidentIDDefinition`
 --
 
-LOCK TABLES `residentiddefinition` WRITE;
-/*!40000 ALTER TABLE `residentiddefinition` DISABLE KEYS */;
-INSERT INTO `residentiddefinition` VALUES (1,'Ferris','D','Bueller','Y','2013-07-01','FBue');
-/*!40000 ALTER TABLE `residentiddefinition` ENABLE KEYS */;
+LOCK TABLES `ResidentIDDefinition` WRITE;
+/*!40000 ALTER TABLE `ResidentIDDefinition` DISABLE KEYS */;
+INSERT INTO `ResidentIDDefinition` VALUES (1,'Ferris','D','Bueller','Y','2013-07-01','FBue');
+/*!40000 ALTER TABLE `ResidentIDDefinition` ENABLE KEYS */;
 UNLOCK TABLES;
 
 CREATE TABLE IF NOT EXISTS `residentrotation` (

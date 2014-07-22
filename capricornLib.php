@@ -299,7 +299,7 @@ function getLoginUserCount($section, $type, $note="") {
     $sum = 0;
     $tid = $_SESSION['traineeid'];
 
-    $sql = "SELECT StartDate FROM residentiddefinition WHERE TraineeID=$tid;";
+    $sql = "SELECT StartDate FROM ResidentIDDefinition WHERE TraineeID=$tid;";
 
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
     $results = $results->fetch_all(MYSQL_ASSOC);
@@ -331,7 +331,7 @@ function getLoginUserCount($section, $type, $note="") {
         $currentYear = advanceYearString($currentYear);
         $returnArray []= 0;
     }
-    $sql = "SELECT rid.StartDate, COUNT(em.InternalID) as Count FROM ExamMeta as em INNER JOIN ExamCodeDefinition as ecd on em.ExamCode=ecd.ExamCode AND em.Organization=ecd.ORG INNER JOIN residentiddefinition as rid ON em.TraineeID=rid.TraineeID WHERE em.TraineeID=". $tid . " AND ecd.Type='$type' AND ecd.Section='$section' AND CompletedDTTM >= '" . $july1->format("Y-m-d") . "'";
+    $sql = "SELECT rid.StartDate, COUNT(em.InternalID) as Count FROM ExamMeta as em INNER JOIN ExamCodeDefinition as ecd on em.ExamCode=ecd.ExamCode AND em.Organization=ecd.ORG INNER JOIN ResidentIDDefinition as rid ON em.TraineeID=rid.TraineeID WHERE em.TraineeID=". $tid . " AND ecd.Type='$type' AND ecd.Section='$section' AND CompletedDTTM >= '" . $july1->format("Y-m-d") . "'";
     if ($note != "") {
         $sql = $sql . " AND ecd.Notes LIKE '$note'";
     }
@@ -432,7 +432,7 @@ function getMeanStDevStErr($pgy, $section, $type, $note="", $startDate="2008-07-
 
 function getLoginUserFullName() {
     global $resdbConn;
-    $sql = "SELECT FirstName, MiddleName, LastName FROM residentiddefinition WHERE TraineeID='" . $_SESSION['traineeid'] . "'";
+    $sql = "SELECT FirstName, MiddleName, LastName FROM ResidentIDDefinition WHERE TraineeID='" . $_SESSION['traineeid'] . "'";
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
     $results = $results->fetch_array(MYSQL_NUM);
     $_SESSION['FullName'] = implode(" ", $results);
@@ -442,7 +442,7 @@ function getLoginUserFullName() {
 
 function getLoginUserLastName() {
     global $resdbConn;
-    $sql = "SELECT LastName FROM residentiddefinition WHERE TraineeID='" . $_SESSION['traineeid'] . "'";
+    $sql = "SELECT LastName FROM ResidentIDDefinition WHERE TraineeID='" . $_SESSION['traineeid'] . "'";
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
     $results = $results->fetch_array(MYSQL_NUM);
     $_SESSION['LastName'] = $results[0];
@@ -451,7 +451,7 @@ function getLoginUserLastName() {
 
 function getLoginUserStartDate() {
     global $resdbConn;
-    $sql = "SELECT StartDate FROM residentiddefinition WHERE TraineeID='" . $_SESSION['traineeid'] . "'";
+    $sql = "SELECT StartDate FROM ResidentIDDefinition WHERE TraineeID='" . $_SESSION['traineeid'] . "'";
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
     $results = $results->fetch_array(MYSQL_NUM);
     return join(" ", $results);
