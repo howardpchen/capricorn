@@ -20,7 +20,7 @@ INSERT INTO `AttendingIDDefinition` VALUES (1,'Stein','Ben');
 /*!40000 ALTER TABLE `AttendingIDDefinition` ENABLE KEYS */;
 UNLOCK TABLES;
 
-CREATE TABLE IF NOT EXISTS `examcodedefinition` (
+CREATE TABLE IF NOT EXISTS `ExamCodeDefinition` (
   `InternalCode` varchar(18) NOT NULL DEFAULT '',
   `ORG` varchar(7) DEFAULT NULL,
   `ExamCode` varchar(10) DEFAULT NULL,
@@ -36,13 +36,13 @@ CREATE TABLE IF NOT EXISTS `examcodedefinition` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `examcodedefinition`
+-- Dumping data for table `ExamCodeDefinition`
 --
 
-LOCK TABLES `examcodedefinition` WRITE;
-/*!40000 ALTER TABLE `examcodedefinition` DISABLE KEYS */;
-INSERT INTO `examcodedefinition` VALUES ('1','hosp','RPID2503','XR CHEST 2 VIEWS','dept','UH Chest','CHEST','CR','notes: nil'),('2','hosp','RPID2605','XR PEDIATRIC BABYGRAM','dept','Peds','BABY','BABY','notes: nil');
-/*!40000 ALTER TABLE `examcodedefinition` ENABLE KEYS */;
+LOCK TABLES `ExamCodeDefinition` WRITE;
+/*!40000 ALTER TABLE `ExamCodeDefinition` DISABLE KEYS */;
+INSERT INTO `ExamCodeDefinition` VALUES ('1','hosp','RPID2503','XR CHEST 2 VIEWS','dept','UH Chest','CHEST','CR','notes: nil'),('2','hosp','RPID2605','XR PEDIATRIC BABYGRAM','dept','Peds','BABY','BABY','notes: nil');
+/*!40000 ALTER TABLE `ExamCodeDefinition` ENABLE KEYS */;
 UNLOCK TABLES;
 
 CREATE TABLE IF NOT EXISTS `exammeta` (

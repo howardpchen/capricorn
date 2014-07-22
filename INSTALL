@@ -28,10 +28,10 @@ Columns are as follows:
 In our installation we use tools/updateExam.php to pull from a shadow copy of our RIS database.
 You will need to find a similar mechanism to populate this information in your institution.
 
-Codes in the examcodedefinition table will also need to be loaded from your chargemaster.  You will need to assign
+Codes in the ExamCodeDefinition table will also need to be loaded from your chargemaster.  You will need to assign
 values for Section, Type, to teach exam code.  
 
-examcodedefinition
+ExamCodeDefinition
 +--------------+-------------+------+-----+---------+-------+
 | Field        | Type        | Null | Key | Default | Extra |
 +--------------+-------------+------+-----+---------+-------+
