@@ -46,8 +46,8 @@ See the resident view for (opens new windows): <form target=_blank action="<?php
 $sql = "SELECT TraineeID, LastName, FirstName FROM `ResidentIDDefinition` WHERE IsCurrentTrainee=1 ORDER BY StartDate ASC";
 
 $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
-$results = $results->fetch_all(MYSQL_ASSOC);
-foreach ($results as $r)  {
+for ($i=0;$i<$results->num_rows;$i++)  {
+    $r = $results->fetch_array(MYSQL_ASSOC);
     echo "<option value=\"" . $r['TraineeID'] . "\">" . $r['FirstName']  . " " . $r['LastName'];
 }
 ?>
