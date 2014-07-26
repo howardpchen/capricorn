@@ -1,5 +1,5 @@
 <body>
-        <link href="<?php echo $URL_root; ?>chardinjs.css" rel="stylesheet">
+        <link href="<?php echo $URL_root; ?>css/chardinjs.css" rel="stylesheet">
 		<script src="<?php echo $URL_root; ?>js/jquery.dropotron.min.js"></script>
 		<script src="<?php echo $URL_root; ?>js/config.js"></script>
 		<script src="<?php echo $URL_root; ?>js/skel.min.js"></script>

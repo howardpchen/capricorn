@@ -24,7 +24,7 @@ include "capricornLib.php";
 <html>
 <head>
 <link rel="stylesheet" href="<?php echo $URL_root; ?>css/jquery-ui.css" />
-<link href="chardinjs.css" rel="stylesheet">
+<link href="<?php echo $URL_root; ?>css/chardinjs.css" rel="stylesheet">
 <script src="<?php echo $URL_root; ?>js/jquery-1.9.1.js"></script>
 <script src="<?php echo $URL_root; ?>js/jquery-ui.js"></script>
 <script src="<?php echo $URL_root; ?>js/highcharts.js"></script>
