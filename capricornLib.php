@@ -507,7 +507,7 @@ function getRotationsByTrainee($residentID) {
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
     $result_array = array();
     for ($i = 0; $i < $results->num_rows; $i++) {
-        $result_array[] = $results->fetch_array(MYSQL_ASSOC);
+        $result_array[] = $results->fetch_array(MYSQL_NUM);
     }
     return $result_array;
 }
