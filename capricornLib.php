@@ -214,15 +214,13 @@ function getCountArray ($section, $type, $note, $startDate, $endDate, $interval=
     }
     $sql = $sql . " AND em.CompletedDTTM >= '" . $startDate->format('Y-m-d H:i:s') . "' AND em.CompletedDTTM < '" . $endDate->format('Y-m-d H:i:s') . "'";
 
-    //print_r($sql . "<p>");
-
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
-    $results = $results->fetch_all(MYSQL_ASSOC);
 
     $startDate->add($interval);
     $returnArray[0] = 0;
 
-    foreach ($results as $r) {
+    for ($i=0; $i < $results->num_rows; $i++) {
+        $r = $results->fetch_array(MYSQL_ASSOC);
         $entryDate = date_create($r['CompletedDTTM']);
         while ($entryDate >= $startDate) {
             $returnArray[sizeof($returnArray)] = 0;
@@ -275,8 +273,8 @@ function getIrregularDateCountArray ($section, $type, $note, $individualDates,$s
         $d2 = $sameDay->format("Y-m-d H:i:s");
         $sql .= " AND em.CompletedDTTM > '$d1' AND em.CompletedDTTM < '$d2'";
         $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
-        $results = $results->fetch_all(MYSQL_ASSOC);
-        $returnArray[$d] = $results[0]['count'];
+        $results = $results->fetch_array(MYSQL_ASSOC);
+        $returnArray[$d] = $results['count'];
     }
     return $returnArray;
 }
@@ -302,8 +300,8 @@ function getLoginUserCount($section, $type, $note="") {
     $sql = "SELECT StartDate FROM ResidentIDDefinition WHERE TraineeID=$tid;";
 
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
-    $results = $results->fetch_all(MYSQL_ASSOC);
-    $currentYear = $results[0]['StartDate'];
+    $results = $results->fetch_array(MYSQL_ASSOC);
+    $currentYear = $results['StartDate'];
     $tempSum=0;
 
     $sql = "SELECT Count, CountDT FROM ResidentCounts WHERE TraineeID=$tid AND Type='$type' AND Section='$section'";
@@ -314,8 +312,8 @@ function getLoginUserCount($section, $type, $note="") {
     $sql .= " ORDER BY CountDT;";
 
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
-    $results = $results->fetch_all(MYSQL_ASSOC);
-    foreach ($results as $r) {
+    for ($i = 0; $i < $results->num_rows; $i++) {
+        $r = $results->fetch_array(MYSQL_ASSOC);
         while ($currentYear != $r['CountDT']) {
             $currentYear = advanceYearString($currentYear);
             $returnArray []= $tempSum;
@@ -337,13 +335,12 @@ function getLoginUserCount($section, $type, $note="") {
     }
 
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
-    $results = $results->fetch_all(MYSQL_ASSOC);
-    if ($results[0]['StartDate'] != $july1->format("Y-m-d"))
-        $returnArray []= $results[0]['Count'];
-    else $returnArray[0] = $results[0]['Count'];
-    $sum += $results[0]['Count'];
-    array_unshift($returnArray, $sum);
-
+    $r = $results->fetch_array(MYSQL_ASSOC);
+    if ($r['StartDate'] != $july1->format("Y-m-d"))
+        $returnArray []= $r['Count'];
+    else $returnArray[0] = $r['Count'];
+        $sum += $r['Count'];
+        array_unshift($returnArray, $sum);
     return $returnArray;
 }
 
@@ -388,8 +385,9 @@ function getOverallCountArray($pgy, $section, $type, $note="", $startDate="2008-
     $sql = $sql . " AND CountDT >= '" . $startDate . "' AND CountDT < '" . $endDate . "'";
 
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
-    $results = $results->fetch_all(MYSQL_ASSOC);
-    foreach ($results as $r)  {
+
+    for ($i = 0; $i < $results->num_rows; $i++)  {
+        $r = $results->fetch_array(MYSQL_ASSOC);
         /*
         if (isset($returnArray[$r['TraineeID']])) $returnArray[$r['TraineeID']]++;
         else  $returnArray[$r['TraineeID']] = 1;
@@ -491,8 +489,12 @@ function getRotations() {
     global $resdbConn;
     $sql = "SELECT DISTINCT Rotation FROM ExamCodeDefinition;";
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
-    $results = $results->fetch_all();
-    return $results;
+
+    $result_array = array();
+    for ($i = 0; $i < $results->num_rows; $i++) {
+        $result_array[] = $results->fetch_array(MYSQL_ASSOC);
+    }
+    return $result_array;
 }
 
 /* 
@@ -503,8 +505,11 @@ function getRotationsByTrainee($residentID) {
     global $resdbConn;
     $sql = "SELECT DISTINCT * FROM ResidentRotation WHERE TraineeID=$residentID ORDER BY RotationStartDate;";
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
-    $results = $results->fetch_all(MYSQL_ASSOC);
-    return $results;
+    $result_array = array();
+    for ($i = 0; $i < $results->num_rows; $i++) {
+        $result_array[] = $results->fetch_array(MYSQL_NUM);
+    }
+    return $result_array;
 }
 
 
@@ -528,8 +533,11 @@ function getExamCodeData($info = 'Section, Type', $array=NULL, $suffix) {
     $sql .= " $suffix"; 
     //print_r($sql . "<p>");
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
-    $results = $results->fetch_all();
-    return $results;
+    $result_array = array();
+    for ($i = 0; $i < $results->num_rows; $i++) {
+        $result_array[] = $results->fetch_array(MYSQL_NUM);
+    }
+    return $result_array;
 }
 /**************************************
  Graph Functions
