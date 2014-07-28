@@ -62,8 +62,9 @@ foreach ($smn as $codeData) {
         $sql = "SELECT em.InternalID,TraineeID,ResidentYear FROM ExamMeta as em INNER JOIN ExamCodeDefinition as ecd on em.ExamCode=ecd.ExamCode AND em.Organization=ecd.ORG WHERE ecd.Type='$type' AND ecd.Section='$section' AND ecd.Notes='$notes' AND CompletedDTTM > '$startDate' AND CompletedDTTM < '$endDate'";
 
         $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
-        $results = $results->fetch_all(MYSQL_ASSOC);
-        foreach ($results as $r)  {
+
+        for($i = 0; $i < $results->num_rows; $i++) {
+            $r = $results->fetch_array(MYSQL_ASSOC);
             $resY = $r['ResidentYear'];
             $tID = $r['TraineeID'];
             if (isset($returnArray[$resY][$tID])) {
