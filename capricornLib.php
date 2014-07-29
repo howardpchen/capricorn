@@ -1,6 +1,4 @@
 <?php
-header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
-header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 
 /*
     Capricorn - Open-source analytics tool for radiology residents.
@@ -21,6 +19,12 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+if (isset($_SESSION)) {
+    header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
+    header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+}
+
 
 /**************************************
 capricornLib.php
@@ -69,7 +73,10 @@ $sd = clone $ed;
 $sd->sub(new DateInterval('P31D')); // end date - decided here.  The javascript just reflects the decisions done here.
 $cumulative = False;
 
-writeLog("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
+
+if (isset($_SESSION)) {
+    writeLog("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
+}
 
 $sd = $sd->format("m/d/Y");
 $ed = $ed->format("m/d/Y");
@@ -640,56 +647,6 @@ type: '$type',
     }
         return $returnString;
 }
-
-/*  Backup Copy 1/10/2014
-
-function makeGraph($dataArray, $type="area") {
-    global $graphColor;
-    global $cumulative;
-
-    $returnString = "";
-    $first = True;
-    $totalArray = array();
-    foreach ($dataArray as $k=>$v) {
-        if (!$first)  $returnString .= ",";
-        else $first = False;
-
-        $totalArray[$k] = array_sum($v);
-        $returnString .= "{
-            type: '$type',
-            pointStart: new Date(startDate).valueOf(),
-            pointInterval: pointInt,
-            name: '" . $k . "',";
-        if (isset($graphColor[$k])) {
-            $returnString .= "color: '" . $graphColor[$k] . "',";
-        }
-        $returnString .= "pointWidth: 10,
-            data: [" .  join(",", $v) . "]
-            }";
-
-    }
-    if (!$cumulative) {
-        $returnString .= ",{
-            type: 'pie',
-            name: 'Total',
-            data: [";
-        $first = True;
-        foreach ($totalArray as $section=>$sum) {
-            if (!$first) $returnString .= ",";
-            else $first = False;
-            $returnString .= "{ name: '$section', y: $sum";
-            if (isset($graphColor[$section])) {
-                $returnString .= ", color: '" . $graphColor[$section] . "'";
-            }
-            $returnString .= "}";
-        }
-        $returnString .= "],
-            center: [50, 0], size: 80, showInLegend: false, dataLabels: { enabled: false }}";
-    }
-
-    return $returnString;
-}
-*/
 
 /**
 makeDIV
