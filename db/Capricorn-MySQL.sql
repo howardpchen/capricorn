@@ -63,7 +63,8 @@ CREATE TABLE IF NOT EXISTS `ExamMeta` (
   `ResidentYear` int(11) DEFAULT NULL,
   PRIMARY KEY (`InternalID`),
   KEY `CompletedDTTM` (`CompletedDTTM`,`ExamCode`,`Organization`),
-  KEY `TraineeID` (`TraineeID`,`CompletedDTTM`,`ExamCode`)
+  KEY `TraineeID` (`TraineeID`,`CompletedDTTM`,`ExamCode`),
+  INDEX `AccessionNumber` UNIQUE `AccessionNumber`
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
