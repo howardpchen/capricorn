@@ -48,8 +48,8 @@ UNLOCK TABLES;
 CREATE TABLE IF NOT EXISTS `ExamMeta` (
   `InternalID` varchar(30) NOT NULL,
   `AccessionNumber` varchar(16) DEFAULT NULL,
-  `LastName` varchar(25) NOT NULL,
-  `FirstName` varchar(25) NOT NULL,
+  `LastName` varchar(32) NOT NULL,
+  `FirstName` varchar(32) NOT NULL,
   `PatientID` varchar(50) NOT NULL,
   `ExamCode` varchar(16) DEFAULT NULL,
   `TraineeID` int(11) DEFAULT NULL,
