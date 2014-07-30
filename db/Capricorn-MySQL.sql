@@ -128,6 +128,7 @@ INSERT INTO `ResidentIDDefinition` VALUES (1,'Ferris','D','Bueller','Y','2013-07
 UNLOCK TABLES;
 
 CREATE TABLE IF NOT EXISTS `ResidentRotation` (
+  `ID` int(11) NOT NULL KEY AUTO_INCREMENT,
   `TraineeID` int(11) NOT NULL,
   `Rotation` varchar(25) NOT NULL,
   `RotationStartDate` date NOT NULL,
