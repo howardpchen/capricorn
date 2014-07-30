@@ -27,9 +27,9 @@ CREATE TABLE IF NOT EXISTS `ExamCodeDefinition` (
   `Description` varchar(73) DEFAULT NULL,
   `Department` varchar(10) DEFAULT NULL,
   `Rotation` varchar(9) DEFAULT NULL,
-  `Section` varchar(6) DEFAULT NULL,
-  `Type` varchar(6) DEFAULT NULL,
-  `Notes` varchar(16) DEFAULT NULL,
+  `Section` varchar(6) DEFAULT NOT NULL,
+  `Type` varchar(6) DEFAULT NOT NULL,
+  `Notes` varchar(16) DEFAULT NOT NULL,
   PRIMARY KEY (`InternalCode`),
   KEY `ExamCode` (`ExamCode`,`ORG`),
   KEY `Rotation` (`ExamCode`,`Notes`,`Section`,`Type`,`ORG`)
