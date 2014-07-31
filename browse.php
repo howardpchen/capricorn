@@ -105,10 +105,6 @@ $calls = array();
 
 
 foreach ($rotations as $r) {
-    if (!startsWith($r['Rotation'], 'RES') 
-        && !startsWith($r['Rotation'], 'FEL')
-        && !startsWith($r['Rotation'], 'DEPT - Special Winter Vac')
-        && !startsWith($r['Rotation'], 'VAC')) continue;
 
     $today = date_create('NOW');
     $startD = date_create($r['RotationStartDate']);

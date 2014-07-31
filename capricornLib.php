@@ -510,11 +510,24 @@ Also include start date and end dates.
 */
 function getRotationsByTrainee($residentID) {
     global $resdbConn;
+    global $excludedRotations;
+
     $sql = "SELECT DISTINCT * FROM ResidentRotation WHERE TraineeID=$residentID ORDER BY RotationStartDate;";
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
     $result_array = array();
+
     for ($i = 0; $i < $results->num_rows; $i++) {
-        $result_array[] = $results->fetch_array(MYSQL_NUM);
+        $temp = $results->fetch_array(MYSQL_ASSOC);
+
+
+        // This allows us to choose rotations to exclude
+        // The exclusion array is set in capricornConfig.php
+        $include = true;
+        foreach($excludedRotations as $pattern) {
+            if (preg_match($pattern, $temp['Rotation'])) $include = false; 
+        }
+
+        if ($include) $result_array[] = $temp;
     }
     return $result_array;
 }
