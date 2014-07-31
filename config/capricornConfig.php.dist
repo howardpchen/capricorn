@@ -96,5 +96,13 @@ $excludeBrowse = array();
 $excludeBrowse []= "3D";
 $excludeBrowse []= "MISC";
 
+// Set this array in order to exclude rotations
+// the comparison is done with regular expressions
+// and matching any expression in the array will 
+// lead to exclusion of the rotation from the browse.php
+// and call.php views
+
+$excludedRotations = array();
+$excludedRotations []= "/VA/";
 
 ?>
