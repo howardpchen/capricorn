@@ -34,10 +34,21 @@ cases dividing up the years helps.
 
 *******************************************/
 
-$startFromYear = 2008;
-$endAtYear = 2013;
+
+ // Set up forms of Today and JulyFirst to be used below
+$today = date_create('Now');
+$year = intval($today->format('Y'));
+$thisJulyFirst = date_create($year . "-07-01");
+if ($thisJulyFirst > $today) $thisJulyFirst->sub(new DateInterval("P1Y"));
+
+// If this script is called without query parameters, default to the current year
+$startFromYear = (isset($_GET['startDate']) ? $_GET['startDate'] : $year);
+$endAtYear = (isset($_GET['endDate']) ? $_GET['endDate'] : $year);
+
 
 $runTimeStart = date_create('NOW');
+
+
 
 $smn = getExamCodeData('Section, Type, Notes', NULL, "ORDER BY TYPE");
 
@@ -45,20 +56,13 @@ foreach ($smn as $codeData) {
     $section = $codeData[0];
     $type = $codeData[1];
     $notes = $codeData[2];
-
-    $today = date_create('Now');
-    $year = intval($today->format('Y'));
-    $thisJulyFirst = date_create($year . "-07-01");
-    if ($thisJulyFirst > $today) $thisJulyFirst->sub(new DateInterval("P1Y"));
-    //$endYear = intval($thisJulyFirst->format("Y"));
-    $endYear = $endAtYear;
    
-    $startYear = $startFromYear;
-    while ($startYear < $endYear) {
+    $workingYear = $startFromYear;
+    while ($workingYear <= $endAtYear) {
         $returnArray = array();
-        $startDate = $startYear . "-07-01";
-        $startYear++;
-        $endDate = $startYear . "-07-01";
+        $startDate = $workingYear . "-07-01";
+        $workingYear++;
+        $endDate = ($workingYear != $year ? $workingYear . "-07-01" : date('Y-m-d') );
         $sql = "SELECT em.InternalID,TraineeID,ResidentYear FROM ExamMeta as em INNER JOIN ExamCodeDefinition as ecd on em.ExamCode=ecd.ExamCode AND em.Organization=ecd.ORG WHERE ecd.Type='$type' AND ecd.Section='$section' AND ecd.Notes='$notes' AND CompletedDTTM > '$startDate' AND CompletedDTTM < '$endDate'";
 
         $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
