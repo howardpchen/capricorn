@@ -27,6 +27,8 @@ System-Wide Configurations
 $log_flag = True; // set to false to disable logging.
 
 $timezone_string = 'America/New_York';  // Standard timezone string.
+date_default_timezone_set($timezone_string);
+
 $file_root = "/xampp/htdocs/capricorn/";  // the local file path
 $URL_root = "/capricorn/";  // With trailing slash (/)
 // This is the Capricorn Database information
