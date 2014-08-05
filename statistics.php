@@ -38,8 +38,8 @@ include "capricornLib.php";
 <table border=0 width=100% cellpadding=0 cellspacing=0><tr><td style="padding:15px" valign=top width=250 data-intro="Modalities are generally organized by sections. <P>e.g. CXR is under Chest->Radiography. <P>Body CT is under Body->Computed Tomography <P> Chest CT is under Chest->Computed Tomography" data-position="right">
 
 <?php
-if (!isset($_GET['sec'])) $_GET['sec'] = 'CHEST';
-if (!isset($_GET['mod'])) $_GET['mod'] = 'CR';
+if (!isset($_GET['sec'])) $_GET['sec'] = $statisticsDefault['Section'];
+if (!isset($_GET['mod'])) $_GET['mod'] = $statisticsDefault['Type'];
 
 
 $smn = getExamCodeData('Section, Type', NULL, "ORDER BY SECTION, TYPE");

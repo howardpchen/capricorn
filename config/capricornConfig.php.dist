@@ -96,5 +96,9 @@ $excludeBrowse = array();
 $excludeBrowse []= "3D";
 $excludeBrowse []= "MISC";
 
+// This sets the default type and Section to display under statistics.php
+$statisticsDefault['Type'] = 'CHEST';
+$statisticsDefault['Section'] = 'CR';
+$statisticsDefault['Notes'] = '';
 
 ?>
