@@ -91,6 +91,8 @@ $replaceDict = [
     "MISC" => "Miscellaneous"
     ];
 
+// This text is included in login_success.php
+$inclusionNote = "Note: Currently Capricorn includes only HUP, PMC, PAH, and VF interpretations.  <br>CHOP and VA are notably <u>not</u> included."
 
 //Exclude these modalityes on the modality selection under browse function.  All other modalities in Capricorn database will auto populate.
 

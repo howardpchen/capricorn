@@ -26,7 +26,7 @@
 -->
 </div>
 <div class="row"><div class="12u">
-<p align=center>Note: Currently Capricorn includes only HUP, PMC, PAH, and VF interpretations.  <br>CHOP and VA are notably <u>not</u> included.</p>
+<p align=center><?php echo $inclusionNote ?></p>
 <p align=center><A HREF="logout.php">Log Out</A></P></div>
 
 <?php include "footer.php"; ob_end_flush(); ?>
