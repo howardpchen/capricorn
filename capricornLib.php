@@ -358,6 +358,15 @@ function thisJulyFirst()  {
     if ($thisJulyFirst > $today) $thisJulyFirst->sub(new DateInterval("P1Y"));
     return $thisJulyFirst;    
 }
+
+function nextJuneThirty() {
+    $today = date_create('Now');
+    $year = intval($today->format('Y'));
+    $nextJuneThirty = date_create($year . "-06-30");
+    if ($nextJuneThirty < $today) $nextJuneThirty->add(new DateInterval("P1Y"));
+    return $nextJuneThirty;
+}
+
 /* Obtain an array where each item is a unique resident.  If 
    25 studies are read by 3 residents, then return array may 
    look like this:
