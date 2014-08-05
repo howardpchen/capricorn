@@ -27,6 +27,8 @@ System-Wide Configurations
 $log_flag = True; // set to false to disable logging.
 
 $timezone_string = 'America/New_York';  // Standard timezone string.
+date_default_timezone_set($timezone_string);
+
 $file_root = "/xampp/htdocs/capricorn/";  // the local file path
 $URL_root = "/capricorn/";  // With trailing slash (/)
 // This is the Capricorn Database information
@@ -89,6 +91,8 @@ $replaceDict = [
     "MISC" => "Miscellaneous"
     ];
 
+// This text is included in login_success.php
+$inclusionNote = "Note: Currently Capricorn includes only HUP, PMC, PAH, and VF interpretations.  <br>CHOP and VA are notably <u>not</u> included."
 
 //Exclude these modalityes on the modality selection under browse function.  All other modalities in Capricorn database will auto populate.
 
@@ -96,5 +100,19 @@ $excludeBrowse = array();
 $excludeBrowse []= "3D";
 $excludeBrowse []= "MISC";
 
+// Set this array in order to exclude rotations
+// the comparison is done with regular expressions
+// and matching any expression in the array will 
+// lead to exclusion of the rotation from the browse.php
+// and call.php views
+
+$excludedRotations = array();
+$excludedRotations []= "/VA/";
+
+
+// Resident Productivity Goal
+// This value is used in stats_classcomparison.php
+
+$examCountGoal = 50 * 310;  // 50 exams over 310 days
 
 ?>

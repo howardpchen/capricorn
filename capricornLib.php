@@ -358,6 +358,15 @@ function thisJulyFirst()  {
     if ($thisJulyFirst > $today) $thisJulyFirst->sub(new DateInterval("P1Y"));
     return $thisJulyFirst;    
 }
+
+function nextJuneThirty() {
+    $today = date_create('Now');
+    $year = intval($today->format('Y'));
+    $nextJuneThirty = date_create($year . "-06-30");
+    if ($nextJuneThirty < $today) $nextJuneThirty->add(new DateInterval("P1Y"));
+    return $nextJuneThirty;
+}
+
 /* Obtain an array where each item is a unique resident.  If 
    25 studies are read by 3 residents, then return array may 
    look like this:
@@ -378,14 +387,10 @@ function getOverallCountArray($pgy, $section, $type, $note="", $startDate="2008-
         $thisJulyFirst = thisJulyFirst();
         $endDate = $thisJulyFirst->format("Y-m-d");
     }
-    /*
-    $sql = "SELECT em.InternalID,TraineeID FROM ExamMeta as em INNER JOIN ExamCodeDefinition as ecd on em.ExamCode=ecd.ExamCode AND em.Organization=ecd.ORG WHERE em.ResidentYear=". $pgy . " AND ecd.Type='$type' AND ecd.Section='$section'";
-    if ($note != "") {
-        $sql = $sql . " AND ecd.Note LIKE '$note'";
-    }
-    $sql = $sql . " AND em.CompletedDTTM > '" . $startDate . "' AND em.CompletedDTTM < '" . $endDate . "'";
-    */
-    $sql = "SELECT TraineeID, Count FROM ResidentCounts WHERE ResidentYear=". $pgy . " AND Type='$type' AND Section='$section'";
+
+    // Pull historical data from ResidenCounts
+
+    $sql = "SELECT TraineeID, Count FROM ResidentCounts WHERE ResidentYear=". $pgy . " AND Type like '$type' AND Section like '$section'";
     if ($note != "") {
         $sql = $sql . " AND Notes LIKE '$note'";
     }
@@ -395,10 +400,6 @@ function getOverallCountArray($pgy, $section, $type, $note="", $startDate="2008-
 
     for ($i = 0; $i < $results->num_rows; $i++)  {
         $r = $results->fetch_array(MYSQL_ASSOC);
-        /*
-        if (isset($returnArray[$r['TraineeID']])) $returnArray[$r['TraineeID']]++;
-        else  $returnArray[$r['TraineeID']] = 1;
-        */
         if (isset($returnArray[$r['TraineeID']])) $returnArray[$r['TraineeID']] += $r['Count'];
         else  $returnArray[$r['TraineeID']] = $r['Count'];
     }
@@ -443,7 +444,6 @@ function getLoginUserFullName() {
     $_SESSION['FullName'] = implode(" ", $results);
     return $_SESSION['FullName'];
 }
-
 
 function getLoginUserLastName() {
     global $resdbConn;
@@ -510,11 +510,24 @@ Also include start date and end dates.
 */
 function getRotationsByTrainee($residentID) {
     global $resdbConn;
+    global $excludedRotations;
+
     $sql = "SELECT DISTINCT * FROM ResidentRotation WHERE TraineeID=$residentID ORDER BY RotationStartDate;";
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
     $result_array = array();
+
     for ($i = 0; $i < $results->num_rows; $i++) {
-        $result_array[] = $results->fetch_array(MYSQL_NUM);
+        $temp = $results->fetch_array(MYSQL_ASSOC);
+
+
+        // This allows us to choose rotations to exclude
+        // The exclusion array is set in capricornConfig.php
+        $include = true;
+        foreach($excludedRotations as $pattern) {
+            if (preg_match($pattern, $temp['Rotation'])) $include = false; 
+        }
+
+        if ($include) $result_array[] = $temp;
     }
     return $result_array;
 }
