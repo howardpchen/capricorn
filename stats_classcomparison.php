@@ -181,7 +181,7 @@ END;
 // '' = all notes
 // startDate = thisJulyFirst()
 
-$data = getOverallCountArray(getLoginUserPGY(), '%', '%', '', thisJulyFirst()->format('Y-m-d'), nextJuneThirty()->format('Y-m-d'));
+$data = getOverallCountArray(getLoginUserPGY() - 1, '%', '%', '', thisJulyFirst()->format('Y-m-d'), nextJuneThirty()->format('Y-m-d'));
 
 echoYouVSClassGraphJS($data);
 makeDIV('projected', '750px', '400px');  // part of CapicornLib
