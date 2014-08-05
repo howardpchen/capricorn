@@ -13,6 +13,7 @@
 </head>
 <?php include "header.php"; ?>
 
+<?php include "stats_classcomparison.php"; ?>
 
 <div class="row" data-intro="Click on a button to view the data.">
 <div class="4u" align="center"> <a href="browse.php"><img src="browse.png"><br>Explore Progress</a></div>
