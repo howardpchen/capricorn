@@ -61,10 +61,9 @@ foreach ($smn as $codeData) {
     while ($workingYear <= $endAtYear) {
         $returnArray = array();
         $startDate = $workingYear . "-07-01";
+        $endDate = ($workingYear == $year ? date('Y-m-d') : $workingYear + 1 . "-06-30" );
+        $sql = "SELECT em.InternalID,TraineeID,ResidentYear FROM ExamMeta as em INNER JOIN ExamCodeDefinition as ecd on em.ExamCode =ecd.ExamCode AND em.Organization=ecd.ORG WHERE ecd.Type='$type' AND ecd.Section='$section' AND ecd.Notes='$notes' AND CompletedDTTM > '$startDate' AND CompletedDTTM < '$endDate'";
         $workingYear++;
-        $endDate = ($workingYear != $year ? $workingYear . "-07-01" : date('Y-m-d') );
-        $sql = "SELECT em.InternalID,TraineeID,ResidentYear FROM ExamMeta as em INNER JOIN ExamCodeDefinition as ecd on em.ExamCode=ecd.ExamCode AND em.Organization=ecd.ORG WHERE ecd.Type='$type' AND ecd.Section='$section' AND ecd.Notes='$notes' AND CompletedDTTM > '$startDate' AND CompletedDTTM < '$endDate'";
-
         $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
 
         for($i = 0; $i < $results->num_rows; $i++) {
