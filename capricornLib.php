@@ -298,10 +298,13 @@ function advanceYearString($dateStr)  {
     return $dateStr;
 }
 function getLoginUserCount($section, $type, $note="") {
+
+    // This returns an array for the currently logged in user
+    // based on supplied Section, Type, and Note
+    // structured as follows: [sum, yr1, yr2, yr3, yr4]
+
     global $resdbConn;
-    $returnArray = array();
-    $tempSum = 0;
-    $sum = 0;
+    $returnArray = array(0, 0, 0, 0, 0);
     $tid = $_SESSION['traineeid'];
 
     $sql = "SELECT StartDate FROM ResidentIDDefinition WHERE TraineeID=$tid;";
@@ -311,43 +314,20 @@ function getLoginUserCount($section, $type, $note="") {
     $currentYear = $results['StartDate'];
     $tempSum=0;
 
-    $sql = "SELECT Count, CountDT FROM ResidentCounts WHERE TraineeID=$tid AND Type='$type' AND Section='$section'";
+    // Pull counts from existing ResidentCounts data
+
+    $sql = "SELECT Count, ResidentYear FROM ResidentCounts WHERE TraineeID=$tid AND Type LIKE '$type' AND Section LIKE '$section'";
     if ($note != "") {
         $sql = $sql . " AND Notes LIKE '$note'";
     }
 
-    $sql .= " ORDER BY CountDT;";
-
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
     for ($i = 0; $i < $results->num_rows; $i++) {
         $r = $results->fetch_array(MYSQL_ASSOC);
-        while ($currentYear != $r['CountDT']) {
-            $currentYear = advanceYearString($currentYear);
-            $returnArray []= $tempSum;
-            $tempSum = 0;
-        }
-        $tempSum += $r['Count'];
-        $sum += $r['Count'];
-    }
-    $returnArray []= $tempSum;
-    $july1 = thisJulyFirst();
-    if ($currentYear != $july1->format("Y-m-d")) $currentYear = advanceYearString($currentYear);
-    while ($currentYear != $july1->format("Y-m-d"))  {
-        $currentYear = advanceYearString($currentYear);
-        $returnArray []= 0;
-    }
-    $sql = "SELECT rid.StartDate, COUNT(em.InternalID) as Count FROM ExamMeta as em INNER JOIN ExamCodeDefinition as ecd on em.ExamCode=ecd.ExamCode AND em.Organization=ecd.ORG INNER JOIN ResidentIDDefinition as rid ON em.TraineeID=rid.TraineeID WHERE em.TraineeID=". $tid . " AND ecd.Type='$type' AND ecd.Section='$section' AND CompletedDTTM >= '" . $july1->format("Y-m-d") . "'";
-    if ($note != "") {
-        $sql = $sql . " AND ecd.Notes LIKE '$note'";
+        $returnArray[$r['ResidentYear']] += $r['Count'];
     }
 
-    $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
-    $r = $results->fetch_array(MYSQL_ASSOC);
-    if ($r['StartDate'] != $july1->format("Y-m-d"))
-        $returnArray []= $r['Count'];
-    else $returnArray[0] = $r['Count'];
-        $sum += $r['Count'];
-        array_unshift($returnArray, $sum);
+    $returnArray[0] = array_sum($returnArray);
     return $returnArray;
 }
 
