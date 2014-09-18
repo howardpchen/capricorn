@@ -75,7 +75,7 @@ if ($arrangement[0] == "BABY") {
 }
 
 foreach ($arrangement as $moda) {
-    if ($cumulative) assembleGraph($mod, 'area', $dispArray[$moda]);
+    if ($cumulative) assembleGraph($moda, 'area', $dispArray[$moda]);
     else assembleGraph($moda, 'column', $dispArray[$moda]);
 }
 
