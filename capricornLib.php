@@ -273,28 +273,22 @@ function advanceYearString($dateStr)  {
     $dateStr = $dateStr->format("Y-m-d");
     return $dateStr;
 }
+
 function getLoginUserCount($section, $type, $note="") {
-
-    // This returns an array for the currently logged in user
-    // based on supplied Section, Type, and Note
-    // structured as follows: [sum, yr1, yr2, yr3, yr4]
-
     global $resdbConn;
     $returnArray = array();
     $tempSum = 0;
     $sum = 0;
     $tid = $_SESSION['traineeid'];
 
-    $sql = "SELECT StartDate FROM ResidentIDDefinition WHERE TraineeID=$tid;";
+    $sql = "SELECT StartDate FROM residentiddefinition WHERE TraineeID=$tid;";
 
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
-    $results = $results->fetch_array(MYSQL_ASSOC);
-    $currentYear = $results['StartDate'];
+    $results = $results->fetch_all(MYSQL_ASSOC);
+    $currentYear = $results[0]['StartDate'];
     $tempSum=0;
 
-    // Pull counts from existing ResidentCounts data
-
-    $sql = "SELECT Count, ResidentYear FROM ResidentCounts WHERE TraineeID=$tid AND Type LIKE '$type' AND Section LIKE '$section'";
+    $sql = "SELECT Count, CountDT FROM residentcounts WHERE TraineeID=$tid AND Type='$type' AND Section='$section'";
     if ($note != "") {
         $sql = $sql . " AND Notes LIKE '$note'";
     }
@@ -302,14 +296,28 @@ function getLoginUserCount($section, $type, $note="") {
     $sql .= " ORDER BY CountDT;";
 
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
-    for ($i = 0; $i < $results->num_rows; $i++) {
-        $r = $results->fetch_array(MYSQL_ASSOC);
-        $returnArray[$r['ResidentYear']] += $r['Count'];
+    $results = $results->fetch_all(MYSQL_ASSOC);
+    foreach ($results as $r) {
+        while ($currentYear != $r['CountDT']) {
+            $currentYear = advanceYearString($currentYear);
+            $returnArray []= $tempSum;
+            $tempSum = 0;
+        }
+        $tempSum += $r['Count'];
+        $sum += $r['Count'];
     }
-
-    $returnArray[0] = array_sum($returnArray);
+    $returnArray []= $tempSum;
+    $july1 = thisJulyFirst();
+    if ($currentYear != $july1->format("Y-m-d")) $currentYear = advanceYearString($currentYear);
+    while ($currentYear != $july1->format("Y-m-d"))  {
+        $currentYear = advanceYearString($currentYear);
+        $returnArray []= 0;
+    }
+    $sum += $results[0]['Count'];
+    array_unshift($returnArray, $sum);
     return $returnArray;
 }
+
 
 function thisJulyFirst()  {
     $today = date_create('Now');
