@@ -25,12 +25,12 @@ System-Wide Configurations
  **************************************/
 
 $log_flag = True; // set to false to disable logging.
-
 $timezone_string = 'America/New_York';  // Standard timezone string.
+$file_root = "/xampp/htdocs/capricorn/";  // the local file path
+$log_path = "../capricorn.log/"; // Relative to $file_root
+$URL_root = "/capricorn/";  // With trailing slash (/)
 date_default_timezone_set($timezone_string);
 
-$file_root = "/xampp/htdocs/capricorn/";  // the local file path
-$URL_root = "/capricorn/";  // With trailing slash (/)
 // This is the Capricorn Database information
 $mysql_host = 'localhost';
 $mysql_username = 'capricorn_username';
@@ -62,6 +62,11 @@ $graphColor['IR'] = '#AA0000';
 $graphColor['GI'] = '#008888';
 $graphColor['GU'] = '#880088';
 $graphColor['SPINE'] = '#8888CC';
+$graphColor['MajorChange']='#AA1111';
+$graphColor['MinorChange']='#DDDD22';
+$graphColor['Addition']='#44DD66';
+$graphColor['Agree']='#6666FF';
+$graphColor['GreatCall']='#33CCFF';
 
 // Dictionary to change shorthand codes to human-friendly text.
 $replaceDict = [ 
@@ -92,13 +97,15 @@ $replaceDict = [
     ];
 
 // This text is included in login_success.php
-$inclusionNote = "Note: Currently Capricorn includes only HUP, PMC, PAH, and VF interpretations.  <br>CHOP and VA are notably <u>not</u> included."
+$inclusionNote = "Note: Currently Capricorn includes only HUP, PMC, PAH, and VF interpretations.  <br>CHOP and VA are notably <u>not</u> included.";
 
-//Exclude these modalityes on the modality selection under browse function.  All other modalities in Capricorn database will auto populate.
 
+//Exclude these modalityes on the modality selection under browse function.
 $excludeBrowse = array();
 $excludeBrowse []= "3D";
 $excludeBrowse []= "MISC";
+$excludeBrowse []= "DEXA";
+
 
 
 // Set this array in order to exclude rotations
@@ -121,5 +128,35 @@ $statisticsDefault = array();
 $statisticsDefault['Type'] = 'CHEST';
 $statisticsDefault['Section'] = 'CR';
 $statisticsDefault['Notes'] = '';
+
+// List of discrepancy strings used for Call studies only.
+
+$discrepancyCallString = array(
+    "GreatCall",
+    "MajorChange",
+    "MinorChange",
+    "Addition",
+    "Agree" 
+);
+
+// Regular expression used for matching discrepancy markers, some used for call and some used for day-time.
+// Note that Attest is not in $discrepancyCallString.  This means that it defines 
+// a designation used for day-time studies only.
+
+$discrepancyString['GreatCall'] = '/\*\*\*ATTENDING RADIOLOGIST AGREEMENT/';
+$discrepancyString['Agree'] = '/agree with the preliminary report without modification/';
+$discrepancyString['Attest'] = '/and agree with this report/';
+$discrepancyString['MajorChange'] = '/\*\*ATTENDING RADIOLOGIST CHANGE/';
+$discrepancyString['MinorChange'] = '/ATTENDING RADIOLOGIST CHANGE/';
+$discrepancyString['Addition'] = '/ATTENDING RADIOLOGIST ADDITION/';
+
+//  If review is required for a designation, then when the trainee views the report 
+//  there will be an option to mark the study as reviewed OR to flag it for admin attention.
+
+$discrepancyReviewRequired = array();
+$discrepancyReviewRequired []= 'MajorChange';
+$adminTraineeID = '99999999'; // Special traineeid reserved for admin (e.g. residency director).
+
+$adminPrivateTagPrefix = '*';
 
 ?>
