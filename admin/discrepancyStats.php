@@ -224,6 +224,7 @@ function makeDiscrepancyGraph($section, $type)  {
     global $traineeID;
     global $allCountArrays;
     global $recentCountArrays;
+	global $recentCountLimit;
     $sectionEnglish=codeToEnglish($section);
     $typeEnglish=codeToEnglish($type);
     //$recentCounts = getDiscrepancyCountsByStudy($section, $type, $traineeID);
@@ -251,7 +252,7 @@ function makeDiscrepancyGraph($section, $type)  {
             text: "Most Recent (n=$recentSum)"
         },
         subtitle: {
-            text: "Statistics uses most recent 200 studies, or all studies if <200 total."
+            text: "Statistics uses most recent $recentCountLimit studies, or all studies if less than threshold."
         },
         tooltip: {
     	    pointFormat: '<b>{point.y} studies</b> ({point.percentage:.1f}%)'
@@ -357,6 +358,7 @@ foreach ($results as $r)  {
 <input type=submit value="Go"></form>
 <?php 
 tableStartSection("Summaries For Discrepancies", 0);
+echo "<h4 align=center>'Recent' statistics are calculated using most recent $recentCountLimit studies.</h4>";
 makeSummaryGraph("MajorChange");
 makeSummaryGraph("MinorChange");
 makeSummaryGraph("Addition");

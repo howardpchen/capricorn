@@ -85,7 +85,7 @@ $(function() {
     }
     });
     d = new Date();
-    d.setDate(d.getDate()-6);
+    d.setDate(d.getDate()-27);
     $("#from").datepicker('setDate', d);
 
     $( "#to" ).datepicker({
@@ -109,171 +109,44 @@ function loadList(mode)  {
 </script>
 </head>
 <?php include "../header.php";
+
+if ($_SESSION['adminid'] >= 99999999) include_once "index_resdirector.php";
+else if ($_SESSION['adminid'] >= 90000000) include_once "index_feldirector.php";
+
 ?>
 
-<form id="range" method="GET" action="discrepancyWorklist.php">
-<label for="from" >From</label>
-<input type="text" size=10 id="from" name="from" />
-<label for="to">to</label>
-<input type="text" size=10 id="to" name="to"/> 
-<input id="mode" type="hidden" name="mode">
-
-</form>
 
 <?php
-tableStartSection("Discrepancy Worklist",0);
-?><br>
-<div class="row" data-intro="Click on a button to view the data.">
-<div class="3u">
-<center><a class="mainMenuButton" href="javascript:loadList('ED');">Emtrac</a>
-<p id="EmtracCount"><img src="<?php echo $URL_root;?>/css/images/loader_small.gif"></p>
-</center>
-</div>
-<div class="3u">
-<center>
-<a class="mainMenuButton" href="javascript:loadList('Major');">Major</a>
-<p id="MajorCount"><img src="<?php echo $URL_root;?>/css/images/loader_small.gif"></p>
-</center>
-</div>
-<div class="3u">
-<center>
-<a class="mainMenuButton" href="javascript:loadList('Flagged');">Flagged</a>
-
-<p id="FlaggedCount"><img src="<?php echo $URL_root;?>/css/images/loader_small.gif"></p>
-</center>
-</div>
-</div>
-
-<?php
-tableEndSection();
-?>
-
-<?php
-tableStartSection("Discrepancies by Date",0);
-?><br>
-
-<div class="row" data-intro="Click on a button to view the data.">
-<div class="3u">
-<center><a class="mainMenuButton" href="javascript:loadList('EDAll');">All Emtrac</a>
-<p id="EmtracAllCount"><img src="<?php echo $URL_root;?>/css/images/loader_small.gif"></p>
-</center>
-</div>
-<div class="3u">
-<center>
-<a class="mainMenuButton" href="javascript:loadList('MajorAll');">All Major</a>
-<p id="MajorAllCount"><img src="<?php echo $URL_root;?>/css/images/loader_small.gif"></p>
-</center>
-</div>
-<div class="3u">
-<center>
-<a class="mainMenuButton" href="javascript:loadList('Minor');">Minor</a>
-<p id="MinorCount"><img src="<?php echo $URL_root;?>/css/images/loader_small.gif"></p>
-</center>
-</div>
-<div class="3u">
-<center>
-<a class="mainMenuButton" href="javascript:loadList('Addition');">Addition</a>
-<p id="AdditionCount"><img src="<?php echo $URL_root;?>/css/images/loader_small.gif"></p>
-</center>
-</div>
-</div>
-
-<?php
-tableEndSection();
-?>
-
-<?php
-tableStartSection("Analytics - Work in Progress",0);
-?><br>
-<div class="row" data-intro="Click on a button to view the data.">
-<div class="4u">
-<center>
-<a class="mainMenuButton" href="reviewCompliance.php">Compliance</a>
-</center>
-</div>
-
-<div class="4u">
-<center>
-<a class="mainMenuButton" href="javascript: $('#residentDisc').submit()">Resident</a>
-<form action="discrepancyStats.php" method=GET id="residentDisc">
-<select class='resViewSelector' name='traineeid' style='margin-top:5px'>
-<?php
-
-$sql = "SELECT TraineeID, LastName, FirstName FROM `residentiddefinition` WHERE IsCurrentTrainee='Y' AND IsResident=1 AND IsFellow=0 ORDER BY StartDate ASC";
-
-$results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
-$results = $results->fetch_all(MYSQL_ASSOC);
-foreach ($results as $r)  {
-    if ($r['LastName'] == "Cook" && $r['FirstName'] == "Tessa") continue;
-    echo "<option value=\"" . $r['TraineeID'] . "\">" . $r['FirstName']  . " " . $r['LastName'];
-}
-?>
-</select>
-</form>
-</center>
-</div>
-
-<div class="4u">
-<center>
-<a class="mainMenuButton" href="discrepancyClass.php">Discrepancy By Class</a>
-</center>
-</div>
-
-</div>
-<div class='row'>
-<div class="4u">
-<center>
-<a class="mainMenuButton" href="reviewOverviewAll.php">Overall Res+Fel</a>
-</center>
-</div>
-<div class="4u">
-<center>
-<a class="mainMenuButton" href="reviewResidentByModality.php">Residents Overview</a>
-</center>
-</div>
-<div class="4u">
-<center>
-<a class="mainMenuButton" href="reviewFellowByModality.php">Fellows Overview</a>
-</center>
-</div>
-
-<!--
-<div class="4u">
-<center>
-<a class="mainMenuButton" href="discrepancyEmtrac.php">ED Analytics</a>
-</center>
-</div>
--->
-</div>
-
-
-<?php
-tableEndSection();
-?>
-
-<?php
-tableStartSection("Utility Tools",0);
+tableStartSection("Detailed Views",0);
 ?><br>
 <div class="row">
-<div class="6u">
+<div class="4u">
+<center>
+<form id='specificTrainee' action="<?php echo $URL_root; ?>login_success.php" method=GET>
 
-See the resident view for (opens new windows): <form target=_blank action="<?php echo $URL_root; ?>login_success.php" method=GET>
-
-<select class='resViewSelector' name='changeid'>
-<option>======RESIDENTS======
+<a href="javascript:void(0);" onclick="
+if (document.getElementById('changeid').value != '-1') 
+	$('#specificTrainee').submit();
+else
+	alert('Select a trainee name first.');
+" class="mainMenuButton">Load Trainee</a><br>
+<select class='resViewSelector' id='changeid' name='changeid'>
 <?php
+if ($_SESSION['traineeid'] == 99999999) {
+	echo "<option value='-1'>======RESIDENTS======\n";
 
-$sql = "SELECT TraineeID, LastName, FirstName FROM `residentiddefinition` WHERE IsCurrentTrainee='Y' AND IsResident=1 AND IsFellow=0 ORDER BY StartDate ASC";
+	$sql = "SELECT TraineeID, LastName, FirstName FROM `residentiddefinition` WHERE IsCurrentTrainee='Y' AND IsResident=1 AND IsFellow=0 ORDER BY StartDate ASC";
 
-$results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
-$results = $results->fetch_all(MYSQL_ASSOC);
-foreach ($results as $r)  {
-    if ($r['LastName'] == "Cook" && $r['FirstName'] == "Tessa") continue;
-    echo "<option value=\"" . $r['TraineeID'] . "\">" . ucfirst(strtolower($r['FirstName']))  . " " . ucfirst(strtolower($r['LastName']));
+	$results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
+	$results = $results->fetch_all(MYSQL_ASSOC);
+	foreach ($results as $r)  {
+		if ($r['LastName'] == "Cook" && $r['FirstName'] == "Tessa") continue;
+		echo "<option value=\"" . $r['TraineeID'] . "\">" . ucfirst(strtolower($r['LastName']))  . ", " . ucfirst(strtolower($r['FirstName']));
 
+	}
 }
 ?>
-<option>======FELLOWS======
+<option value='-1'>======FELLOWS======
 <?php
 $sql = "SELECT TraineeID, LastName, FirstName FROM `residentiddefinition` WHERE IsCurrentTrainee='Y' AND IsFellow=1 ORDER BY LastName ASC";
 
@@ -281,17 +154,16 @@ $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
 $results = $results->fetch_all(MYSQL_ASSOC);
 foreach ($results as $r)  {
     if ($r['LastName'] == "Cook" && $r['FirstName'] == "Tessa") continue;
-    echo "<option value=\"" . $r['TraineeID'] . "\">" . ucfirst(strtolower($r['FirstName']))  . " " . ucfirst(strtolower($r['LastName']));
-
+    echo "<option value=\"" . $r['TraineeID'] . "\">" . ucfirst(strtolower($r['LastName']))  . ", " . ucfirst(strtolower($r['FirstName']));
 }
 
 ?>
 </select>
-
-<input type=submit value="Go"></form>
-
+</form>
+</center>
 </div>
-<div class="6u"><strong>Report by Accession </strong>
+
+<div class="4u"><strong>Report by Accession </strong>
     <form action="javascript:loadReport(document.getElementById('reportByAcc').value)"><input type=text id='reportByAcc' size=15 maxlength=15 name='acc'><input type=button onClick="loadReport(document.getElementById('reportByAcc').value)" value="Go"></form>
 </div>
 

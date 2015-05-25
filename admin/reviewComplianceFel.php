@@ -19,25 +19,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
 $startDate = thisJulyFirst();
-
-if (isset($_GET['group']))  {
-	if ($_GET['group'] == 'fellow')  {
-		$group = "AND rid.IsFellow=1";
-	}
-	else  {
-		$g = $_GET['group'];
-	}
-} else  {
-    // Defaults to current 2nd years. i.e. started last year
-	$g = $_GET['group'] = intval($startDate->format("Y"))+3;
-}
-
-if (isset($g)) $group = "AND YEAR(rid.StartDate)+4='$g'";
-
-	
 $startDate = $startDate->format("Y-m-d");
 $results = array();
 $listTitle = 'Major Discrepancy Review Compliance';
@@ -45,20 +27,22 @@ $sql = "
 SELECT 
     IF(IsFellow=0, YEAR(rid.StartDate)+4, 'Fellow')  AS 'Class',
     CONCAT(rid.LastName, ', ' , rid.FirstName) AS 'Name',
-    SUM(IF(CompositeDiscrepancy='MajorChange', 1, 0)) AS 'All Major',
-    SUM(IF(CompositeDiscrepancy='MajorChange' AND ed.TraineeMarkAsReviewed>=1, 1, 0)) AS 'Reviewed Major',
-    IF(SUM(IF(CompositeDiscrepancy='MajorChange', 1, 0)) > 0, ROUND(SUM(IF(CompositeDiscrepancy='MajorChange' AND ed.TraineeMarkAsReviewed>=1, 1, 0)) / SUM(IF(CompositeDiscrepancy='MajorChange', 1, 0)) * 100), '100') AS 'Compliance (%)',
-    SUM(IF(CompositeDiscrepancy='MajorChange' AND ed.TraineeMarkAsReviewed=0, 1, 0)) AS 'Unreviewed Major',
-    SUM(IF(CompositeDiscrepancy='MajorChange' AND ed.TraineeMarkAsReviewed=0 AND DATEDIFF(NOW(),CompletedDTTM)>4, 1, 0)) AS 'Unreviewed > 3 days'
+    SUM(IF(ed.AutoDiscrepancy LIKE 'MajorChange' OR ed.AdminDiscrepancy LIKE 'MajorChange', 1, 0)) AS 'All Major',
+    SUM(IF((ed.AutoDiscrepancy LIKE 'MajorChange' OR ed.AdminDiscrepancy LIKE 'MajorChange') AND ed.TraineeMarkAsReviewed>=1, 1, 0)) AS 'Reviewed Major',
+    IF(SUM(IF(ed.AutoDiscrepancy='MajorChange' OR ed.AdminDiscrepancy='MajorChange', 1, 0)) > 0, ROUND(SUM(IF((ed.AutoDiscrepancy LIKE 'MajorChange' OR ed.AdminDiscrepancy LIKE 'MajorChange') AND ed.TraineeMarkAsReviewed>=1, 1, 0)) / SUM(IF(ed.AutoDiscrepancy='MajorChange' OR ed.AdminDiscrepancy='MajorChange', 1, 0)) * 100), '100') AS 'Compliance (%)',
+    SUM(IF((ed.AutoDiscrepancy LIKE 'MajorChange' OR ed.AdminDiscrepancy LIKE 'MajorChange') AND ed.TraineeMarkAsReviewed=0, 1, 0)) AS 'Unreviewed Major',
+    SUM(IF((ed.AutoDiscrepancy LIKE 'MajorChange' OR ed.AdminDiscrepancy LIKE 'MajorChange') AND ed.TraineeMarkAsReviewed=0 AND DATEDIFF(NOW(),CompletedDTTM)>4, 1, 0)) AS 'Unreviewed > 3 days'
+        
 FROM ExamDiscrepancy AS ed
 INNER JOIN ExamMeta AS em ON em.AccessionNumber=ed.AccessionNumber
 INNER JOIN ResidentIDDefinition AS rid ON ed.TraineeID=rid.TraineeID
-WHERE em.CompletedDTTM>='$startDate'
-$group
+WHERE em.CompletedDTTM>='2014-07-01'
 AND rid.IsCurrentTrainee='Y'
+AND rid.IsFellow='1'
 AND rid.LastName!='Cook'
 GROUP BY rid.TraineeID
 ORDER BY rid.IsFellow ASC, rid.StartDate ASC
+
 ";
 
 $results = getResultsFromSQL($sql);
@@ -77,28 +61,6 @@ $results = getResultsFromSQL($sql);
 </head>
 <?php include "../header.php"; ?>
 <div id='listTitle' class='reportHeader'><?php echo $listTitle; ?></div>
-
-
-<?php
-$yearStrings = array();
-$thisYear = thisJulyFirst();
-$thisYear = intval($thisYear->format("Y"))+1;
-
-for ($i=0; $i<4; $i++)  {
-	$yearStrings []= "<a href='reviewCompliance.php?group=" . ($thisYear+$i) . "'>" . ($thisYear+$i) . "</a>";
-}
-
-?>
-
-<h3>
-
-<?php 
-echo $_GET['group']=="fellow"?"Fellows":"Class of ".$_GET['group'];
-?>
-</h3>
-<h4>
-[<?php echo join(" | ", $yearStrings); ?> | <a href='reviewCompliance.php?group=fellow'>fellow</a>]
-</h4>
 <?php
 // CHECK FOR ADMIN STATUS
 checkAdmin();

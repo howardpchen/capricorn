@@ -77,40 +77,21 @@ function go(index)  {
 <li><a href="#annotate">Tags</a></li>
 </ul>
 <div id="review">
-    <form id="adminInput" method="post" action="<?php echo $URL_root;?>/admin/discrepancyAdminSave.php" onSubmit="return false;">
-        <input type="hidden" name="acc" value="<?php echo $_GET['acc'];?>">
-        <div class="radiobuttons">
-        <input id="adminGreatCall" type="radio" name="adminDisc" value="GreatCall" onClick='saveInput()'>
-        <label for="adminGreatCall" >Great Call</label>
-        <input id="adminAgree" type="radio" name="adminDisc" value="Agree" onClick='saveInput()'>
-        <label for="adminAgree">Agree</label>
-        <input id="adminAddition" type="radio" name="adminDisc" value="Addition" onClick='saveInput()'>
-        <label for="adminAddition">Addition</label>
-        <input id="adminMinorChange" type="radio" name="adminDisc" value="MinorChange" onClick='saveInput()'>
-        <label for="adminMinorChange">Minor Change</label>
-        <input id="adminMajorChange" type="radio" name="adminDisc" value="MajorChange" onClick='saveInput()'>
-        <label for="adminMajorChange">Major Change</label>
-        </div>
-        Comments: <textarea name='adminComment' maxlength=255 onChange='saveInput()'><?php echo $adminComment; ?></textarea><br>
-     
+        <?php if (trim($adminComment) != '') echo "Admin Comments: " . $adminComment."<br>"; ?>
+   
         <?php if (trim($traineeComment) != '') echo "Trainee Comments: " . $traineeComment."<br>"; ?>
-        Trainee Review Status: <select name='traineeMark' onChange='saveInput()'>
-        <option value=0 <?php if($traineeMark==0) echo 'selected';?>>Unreviewed
-        <option value=1 <?php if($traineeMark==1) echo 'selected';?>>Reviewed, No issues
-        <option value=2 <?php if($traineeMark==2) echo 'selected';?>>Flagged for attention
-        <option value=3 <?php if($traineeMark==3) echo 'selected';?>>Resolved - Marked by PD after second review
-        </select>
+        Trainee Review Status: 
+		<?php if($traineeMark==0) echo 'Unreviewed';
+		else if($traineeMark==1) echo 'Reviewed';
+		else if($traineeMark==2) echo 'Flagged for attention';
+		else if($traineeMark==3) echo 'Resolved';
+		?>	
         <br> 
         <label id="saveLabel"></label><br>
         <input type=button value='Prev' onClick='go(-1)'>
-<!--        <input id="savebutton" type=button value='Save' onClick='saveInput()'> -->
         <input type=button value='Next' onClick='go(1)'>
         </form>
 </div>
-<div id="annotate">
-<?php include "tag_navigator.php";?>
-</div>
-
 
 </div>
 <p>

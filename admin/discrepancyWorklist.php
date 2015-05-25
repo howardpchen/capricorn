@@ -49,13 +49,14 @@ switch ($_GET['mode'])  {
         break;
     case "MajorAll":
         $results = getMajorChangeAll($startDate->format('Y-m-d'), $endDate->format('Y-m-d'));
-        $listTitle = "Major Changes";
+        $listTitle = "Major Changes" ;
         break;
     case "Minor":
         $results = getTraineeMinor($startDate->format('Y-m-d'), $endDate->format('Y-m-d'), '');
         break;
     case "Addition":
         $results = getTraineeAddition($startDate->format('Y-m-d'), $endDate->format('Y-m-d'), '');
+		$listTitle = "Additions";
         break;
     case "Flagged":
         $results = getFlagged('', $endDate->format('Y-m-d'));
@@ -75,15 +76,57 @@ if (isset($_GET['ajax']))  {
 <html>
 <head>
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<link rel="stylesheet" href="<?php echo $URL_root; ?>css/jquery-ui.css" />
+<link rel="stylesheet" href="<?php echo $URL_root; ?>css/theme.blue.css" />
 <script src="<?php echo $URL_root; ?>js/jquery-1.9.1.js"></script>
 <script src="<?php echo $URL_root; ?>js/jquery-ui.js"></script>
 <script src="<?php echo $URL_root; ?>js/jquery.tablesorter.min.js"></script>
+<script src="<?php echo $URL_root; ?>js/jquery.tablesorter.widgets.js"></script>
 <script src="<?php echo $URL_root; ?>js/collapseTable.js"></script>
-<title><?php echo $listTitle; ?> - Capricorn</title>
+<script>
+<!--
+$(function() {
+
+    $( "#from" ).datepicker({
+    changeMonth: true,
+    numberOfMonths: 1,
+    onClose: function( selectedDate ) {
+        $( "#to" ).datepicker( "option", "minDate", selectedDate);
+    }
+    });
+    d = new Date('<?php echo $startDate->format('Y-m-d');?>');
+	d.setDate(d.getDate()+1);
+    $("#from").datepicker('setDate', d);
+
+    $( "#to" ).datepicker({
+    changeMonth: true,
+    numberOfMonths: 1,
+    onClose: function( selectedDate ) {
+        $( "#from" ).datepicker("option", "maxDate", selectedDate );
+    }
+    });
+    d = new Date('<?php echo $endDate->format('Y-m-d');?>');
+	d.setDate(d.getDate()+1);
+    $("#to").datepicker('setDate', d);
+
+});
+
+//-->
+</script>
+<title><?php echo $listTitle . " " . $startDate->format('m-d-Y') . ' to ' . $endDate->format('m-d-Y'); ?> - Capricorn</title>
 </head>
 <?php include "../header.php"; ?>
-<div id='listTitle' class='reportHeader'><?php echo $listTitle; ?></div>
+<div id='listTitle' class='reportHeader'><?php echo $listTitle . " "; ?></div>
+<form id="range" method="GET" action="discrepancyWorklist.php">
+<label style="font-size:14pt;" for="from" >From</label>
+<input style="font-size:14pt;" type="text" size=10 id="from" name="from" />
+<label style="font-size:14pt;" for="to">to</label>
+<input style="font-size:14pt;" type="text" size=10 id="to" name="to"/> 
+<input type=submit value='Go'>
+(dates imply 12:00AM)
+<input id="mode" type="hidden" name="mode" value="<?php echo $_GET['mode'];?>">
+</form>
+
 <?php
 // CHECK FOR ADMIN STATUS
 checkAdmin();
@@ -99,7 +142,14 @@ echo $htmlprint;
 
 <script type="text/javascript">
 $(function(){
-    $('#resultsTable').tablesorter(); 
+    $('.results').tablesorter({
+		theme: 'blue',
+		widgets: ['zebra', 'filter'],
+		ignoreCase:true,
+		widgetOption: {
+			filter_onlyAvail: 'dropdownFilter'
+		}
+	}); 
 });
 
 // construct the cookie which allows "Next" and "Prev" function in the report display.
@@ -137,6 +187,6 @@ function updateCurrentStudy(acc, newData)  {
 
 </script>
 
-<a href="javascript:back()">Back</a>
+<a href="javascript:void(0)" onClick="window.history.back()">Back</a>
 <?php include "../footer.php"; ob_end_flush(); ?>
 
