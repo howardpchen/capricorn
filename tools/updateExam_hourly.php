@@ -23,19 +23,15 @@ header( 'Content-type: text/html; charset=utf-8' );
 */
 
 /*
-updateExamp.php
 
-Updates Capricorn database using new RIS data.
-You will have to write this script for your own institution.
-The desired behavior is as follows:
-1) Takes all new RIS studies and insert into Capricorn.
-2) Update existing studies up to 7 days prior - as overnight studies 
-    sometimes will not have a "Finalized" read time or correct 
-    attending name depending on who reads out the next morning.
-3) Prevents duplication of study entries - this is currently done by 
-    creating an InternalID that will stay the same for each study regardless  
-    of the attending or study time.
+This script is called hourly by cron or Task Scheduler to trigger
+updateExam_core.php, setting the number of days to go back to 2.
+
+You can create a second copy of this script called
+updateExam_daily.php or whatever.
+
 */
+
 include "../capricornLib.php";
 
 $runTimeStart = date_create('NOW');
