@@ -113,10 +113,11 @@ function upToDateAsOf() {
 function writeLog($t)   {
     global $log_flag;
     global $file_root;
+    global $log_path;
     global $timezone_string;
     if ($log_flag)  {
         $nowDate = date_create('now', new DateTimeZone($timezone_string));
-        $fh = fopen($file_root . "log/" . $nowDate->format("m-Y") . ".log", 'a') or die("can't open log");
+        $fh = fopen($file_root . $log_path . $nowDate->format("m-Y") . ".log", 'a') or die("can't open log");
         fwrite($fh, "\n" . $nowDate->format("m/d/Y H:i:s") . "\t$t");
         fclose($fh);
     }
@@ -313,11 +314,21 @@ function getLoginUserCount($section, $type, $note="") {
         $currentYear = advanceYearString($currentYear);
         $returnArray []= 0;
     }
+    $sql = "SELECT rid.StartDate, COUNT(em.InternalID) as Count FROM exammeta as em INNER JOIN examcodedefinition as ecd on em.ExamCode=ecd.ExamCode AND em.Organization=ecd.ORG INNER JOIN residentiddefinition as rid ON em.TraineeID=rid.TraineeID WHERE em.TraineeID=". $tid . " AND ecd.Type='$type' AND ecd.Section='$section' AND CompletedDTTM >= '" . $july1->format("Y-m-d") . "'";
+    if ($note != "") {
+        $sql = $sql . " AND ecd.Notes LIKE '$note'";
+    }
+
+    $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
+    $results = $results->fetch_all(MYSQL_ASSOC);
+    if ($results[0]['StartDate'] != $july1->format("Y-m-d"))
+        $returnArray []= $results[0]['Count'];
+    else $returnArray[0] = $results[0]['Count'];
     $sum += $results[0]['Count'];
     array_unshift($returnArray, $sum);
+
     return $returnArray;
 }
-
 
 function thisJulyFirst()  {
     $today = date_create('Now');
@@ -406,11 +417,17 @@ function getMeanStDevStErr($pgy, $section, $type, $note="", $startDate="2008-07-
 
 function getLoginUserFullName() {
     global $resdbConn;
-    $sql = "SELECT FirstName, MiddleName, LastName FROM ResidentIDDefinition WHERE TraineeID='" . $_SESSION['traineeid'] . "'";
+    $_SESSION['FullName'] = getUserFullName($_SESSION['traineeid']);
+    return $_SESSION['FullName'];
+}
+
+function getUserFullName($id) {
+    global $resdbConn;
+    $sql = "SELECT FirstName, MiddleName, LastName FROM ResidentIDDefinition WHERE TraineeID='$id'";
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
     $results = $results->fetch_array(MYSQL_NUM);
-    $_SESSION['FullName'] = implode(" ", $results);
-    return $_SESSION['FullName'];
+    $name = implode(" ", $results);
+    return $name;
 }
 
 function getLoginUserLastName() {
@@ -719,8 +736,8 @@ function assembleGraph($graphName, $type, $makegrapharray) {
                         enabled: false
                     }
                 }, 
-				series:  {
-					animation: false,		// Animation disabled for IE 10 compatibility
+                series:  {
+                    animation: false,    // Animation disabled for IE 10 compatibility
                     point: {
                         events: {
                             click: function() {
@@ -758,7 +775,7 @@ function assembleGraph($graphName, $type, $makegrapharray) {
                             }
                         }
                     }
-				},
+                },
             }
             ,
             series: [$graphSeries]
@@ -775,15 +792,30 @@ function getTraineeStudiesByDate($startDate, $endDate, $section, $type, $notes, 
 
     $tagPhrase = '';
     $tagSearch = '';
+	$caseInfo = 'em.LastName AS `Last Name`, em.FirstName AS `First Name`, ';
     // The dates are in plain text format.
     if (isset($tags) && sizeof($tags) > 0)  {
-        $tagPhrase = " INNER JOIN ExamUserTags AS eut ON em.AccessionNumber=eut.AccessionNumber ";
+        $tagPhrase = "
+		INNER JOIN ExamUserTags AS eut ON em.AccessionNumber=eut.AccessionNumber 
+		INNER JOIN `ResidentIDDefinition` AS rid ON (em.TraineeID=rid.TraineeID)
+        INNER JOIN ExamDiscrepancy AS ed on em.AccessionNumber=ed.AccessionNumber
+			";
+		$caseInfo = "eut.Tag, CONCAT(rid.LastName, ', ', rid.FirstName) AS `Trainee`, ed.AdminComment, ";
+        $tagSearch = ' AND (0 ';
         foreach ($tags as $t)  {
-            if ($t[0] != '#') $tagSearch .= "AND ((eut.TraineeID='" . $_SESSION['traineeid'] . "' OR eut.TraineeID=$adminTraineeID) AND eut.Tag='$t') ";
+            if ($t[0] != '#') $tagSearch .= "OR ((eut.TraineeID='" . $_SESSION['traineeid'] . "' OR eut.TraineeID=$adminTraineeID) AND eut.Tag LIKE '$t') ";
             else $tagSearch .= "AND eut.Tag='$t' ";
         }
+        $tagSearch .= ') ';
+
     } 
-    $sqlquery = "SELECT em.AccessionNumber as `Accession`, em.LastName AS `Last Name`, em.FirstName AS `First Name`, ecd.Description, ecd.ExamCode AS `Exam Code`, aid.LastName AS Attending, CompletedDTTM as `Completed` FROM `exammeta` as em INNER JOIN `examcodedefinition` as ecd ON (em.ExamCode = ecd.ExamCode AND ecd.ORG = em.Organization) INNER JOIN `attendingiddefinition` as aid ON (em.AttendingID = aid.AttendingID) $tagPhrase WHERE 1 $tagSearch";
+
+    $sqlquery = "SELECT DISTINCT em.AccessionNumber as `Accession`,
+    $caseInfo em.ExamCode as `Exam Code`, ecd.Description,  aid.LastName AS Attending, CompletedDTTM as `Completed` FROM `exammeta` as em INNER JOIN `examcodedefinition` as ecd ON (em.ExamCode = ecd.ExamCode AND ecd.ORG = em.Organization) 
+	INNER JOIN `AttendingIDDefinition` as aid ON (em.AttendingID = aid.AttendingID) 
+	$tagPhrase 
+	WHERE 1 $tagSearch";
+
     if (!isset($tags) || sizeof($tags) == 0)  {
         $sqlquery .= "AND `CompletedDTTM` >= '$startDate' AND `CompletedDTTM` < '$endDate' ";
         $sqlquery .= " AND em.TraineeID=" . $_SESSION['traineeid'];
@@ -800,7 +832,6 @@ function getTraineeStudiesByDate($startDate, $endDate, $section, $type, $notes, 
     }
 //    $sqlquery .= " ORDER BY CompletedDTTM DESC ";
     if ($maxLimit) $sqlquery .= " limit 0, 1000";
-
     $results = $resdbConn->query($sqlquery) or die (mysqli_error($resdbConn));
     return $results;
 }
@@ -830,9 +861,11 @@ function getResultsTabDelimited($results)  {
     }
     return $output;
 }
+$resultsTable = 0;
 function getResultsHTML($results)  {
-    global $URL_root;
-    $output = "<table id='resultsTable' class='results'>\n";
+    global $URL_root, $resultsTable;
+    $output = "<table id='resultsTable$resultsTable' class='results'>\n";
+	$resultsTable += 1;
     // Header
     
     $first = True;
@@ -843,7 +876,11 @@ function getResultsHTML($results)  {
             $headers = array_keys($row);
             $output .= "<thead><tr>";
             foreach ($headers as $h)  {
-                $output .= "<th align=left><strong>$h</strong></th>";
+				$fltrstr = '';
+				if ($h == 'Res/Fel' || $h == 'Section' || $h == 'Type' || $h == 'Modality' || $h == 'ED/Inpt' || $h == 'Discrepancy' || $h == 'Trainee' || $h == 'Tag')  {
+					$fltrstr = "class='filter-select dropdownFilter'";
+				}
+                $output .= "<th data-placeholder='Filter' align=left $fltrstr ><strong>$h</strong></th>";
             }
             $output .= "</tr></thead>\n<tbody>\n";
         }
@@ -868,7 +905,7 @@ function getResultsHTML($results)  {
         $output .= "</tr>\n";
     }
     if ($first)  {
-        echo "<tbody><tr><td>No study satisfies the search crtieria.</tr></tbody>";
+        echo "<tbody><tr><td>No study satisfies the search crtieria. Please check your query (for example, the date range). </tr></tbody>";
     }
     $output .= "\n</tbody>\n</table>";
     return $output;
@@ -896,7 +933,7 @@ function isAdmin()  {
         if (!isset($_SESSION['adminid']))  {
             return False;
         } else  {
-            $_SESSION['traineeid'] = $_SESSION['adminid'];
+            //$_SESSION['traineeid'] = $_SESSION['adminid'];
             return True;
         }
     }
@@ -938,17 +975,16 @@ function getResultsFromSQL($sql)  {
  ***************************************/
 
 //$traineeID can be left blank to get all trainees.
-function getTraineeStudiesByDiscrepancy ($startDate, $endDate, $discType, $maxLimit=True, $traineeID="", $other="", $showTrainee=False)  {
+function getTraineeStudiesByDiscrepancy ($startDate, $endDate, $discType, $maxLimit=True, $traineeID="", $other="", $showTrainee=False, $edNotify=False)  {
     global $resdbConn;
     
     // The dates are in plain text format.
-    if ($showTrainee) $st_str = " aid.LastName AS 'Trainee', ";
-    else $st_str = "";
-
-	$sqlquery = "SELECT ed.AccessionNumber AS 'Accession', $st_str IF(AdminDiscrepancy>'',AdminDiscrepancy,AutoDiscrepancy) as `Discrepancy`, IF(TraineeComment>'',TraineeComment,'N/A') as `Comment`,IF(AdminComment>'', AdminComment,'N/A') as `PD Comment`, IF(Location='I', 'Inpatient', IF(Location='E', 'ED', IF(Location='O', 'Outpatient', 'N/A'))) as `Location`, Description, CompletedDTTM as `Completed` FROM ExamDiscrepancy AS ed INNER JOIN ExamMeta as em ON ed.AccessionNumber=em.PrimaryAccessionNumber INNER JOIN ExamCodeDefinition AS ecd ON ecd.ExamCode=em.ExamCode AND ecd.ORG=em.Organization INNER JOIN ResidentIDDefinition as aid ON ed.TraineeID=aid.TraineeID WHERE em.CompletedDTTM >= '$startDate' AND em.CompletedDTTM < '$endDate' AND aid.IsCurrentTrainee='Y' ";
+    if ($showTrainee) $st_str = " CONCAT(aid.LastName, ', ', SUBSTR(aid.FirstName, 1,1)) AS 'Trainee', IF(aid.IsFellow=1,'Fel','Res') as 'Res/Fel', ";
+    else $st_str = "CONCAT(em.LastName, ', ', em.FirstName) AS Patient , ";
+	$sqlquery = "SELECT ed.AccessionNumber AS 'Accession', $st_str CompositeDiscrepancy as `Discrepancy`, IF(TraineeComment>'',TraineeComment,'N/A') as `Trainee Comment`,IF(AdminComment>'', AdminComment,'N/A') as `Admin Comment`, IF(Location='I', 'Inpt', IF(Location='E', 'ED', IF(Location='O', 'Outpt', 'N/A'))) as `Location`, Section, Type, Description, CompletedDTTM as `Completed` FROM ExamDiscrepancy AS ed INNER JOIN ExamMeta as em ON ed.AccessionNumber=em.PrimaryAccessionNumber INNER JOIN ExamCodeDefinition AS ecd ON ecd.ExamCode=em.ExamCode AND ecd.ORG=em.Organization INNER JOIN ResidentIDDefinition as aid ON ed.TraineeID=aid.TraineeID WHERE em.CompletedDTTM >= '$startDate' AND em.CompletedDTTM < '$endDate' AND aid.IsCurrentTrainee='Y' ";
 
     if ($discType != "")  {
-        $sqlquery .= "AND (AutoDiscrepancy LIKE '$discType' OR AdminDiscrepancy LIKE '$discType') ";
+		$sqlquery .= "AND CompositeDiscrepancy LIKE '$discType' ";
     } 
 
     if ($traineeID != "")  {
@@ -959,19 +995,19 @@ function getTraineeStudiesByDiscrepancy ($startDate, $endDate, $discType, $maxLi
 	$sqlquery .= "  GROUP BY ed.AccessionNumber ORDER BY CompletedDTTM DESC ";
     if ($maxLimit) $sqlquery .= " limit 0, 1000";    
 	
-
     $results = $resdbConn->query($sqlquery) or die (mysqli_error($resdbConn));
     return $results;
 }
-function interptedByTrainee($accession, $traineeID)  {
+function interpretedByTrainee($accession, $traineeID)  {
     $sql = "SELECT AccessionNumber FROM ExamMeta WHERE AccessionNumber='$accession' AND TraineeID=$traineeID;";
     $results = getSingleResultArray($sql);
     if (sizeof($results) > 0) return True;
     else return False;
 }
-function getDiscrepancyByAccession($acc, $type='AutoDiscrepancy')  {
+function getDiscrepancyByAccession($acc, $type='CompositeDiscrepancy')  {
     global $resdbConn;
-    $sql = "SELECT $type FROM ExamDiscrepancy AS ed INNER JOIN ExamMeta AS em ON em.PrimaryAccessionNumber=ed.AccessionNumber WHERE em.AccessionNumber='$acc';";
+    $sql = "SELECT $type FROM ExamDiscrepancy AS ed INNER JOIN ExamMeta AS em ON em.PrimaryAccessionNumber=ed.AccessionNumber AND em.TraineeID=ed.TraineeID WHERE em.AccessionNumber='$acc'";
+	if (isset($_SESSION['traineeid']) && $_SESSION['traineeid'] < 90000000) $sql .= " AND em.TraineeID='" . $_SESSION['traineeid'] . "'";
 
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
     $results = $results->fetch_array();
@@ -979,7 +1015,11 @@ function getDiscrepancyByAccession($acc, $type='AutoDiscrepancy')  {
 }
 function saveAdminComment($accession, $discrepancy, $comment, $traineeMark)  {
     global $resdbConn;
-    $sql = "UPDATE ExamDiscrepancy AS ed INNER JOIN ExamMeta AS em ON em.PrimaryAccessionNumber=ed.AccessionNumber SET AdminDiscrepancy='$discrepancy', AdminComment='$comment', TraineeMarkAsReviewed=$traineeMark WHERE em.AccessionNumber='$accession';";
+    $sql = "UPDATE ExamDiscrepancy AS ed INNER JOIN ExamMeta AS em ON em.PrimaryAccessionNumber=ed.AccessionNumber SET AdminDiscrepancy='$discrepancy', ";
+	
+	if ($discrepancy > 0) $sql .= "CompositeDiscrepancy='$compositediscrepancy', ";
+
+	$sql .= "AdminComment='$comment',  TraineeMarkAsReviewed=$traineeMark WHERE em.AccessionNumber='$accession';";
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
     if ($results)  {
         return True;
@@ -1088,7 +1128,7 @@ function getSystemTags($traineeid, $accession)  {
     global $resdbConn;
     // Add system tags one by one by various methods of detection.
     $tags = array();
-    $sql = "select ed.* from `ExamDiscrepancy` as ed INNER JOIN ExamMeta as em ON em.PrimaryAccessionNumber=ed.AccessionNumber WHERE em.AccessionNumber='$accession' limit 0,1000";
+    $sql = "select ed.* from `ExamDiscrepancy` as ed INNER JOIN ExamMeta as em ON em.PrimaryAccessionNumber=ed.AccessionNumber AND em.TraineeID=ed.TraineeID WHERE em.AccessionNumber='$accession' AND ed.TraineeID='$traineeid' limit 0,1000";
     
         //    $resdbConn->query($sql);
     $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
@@ -1099,7 +1139,7 @@ function getSystemTags($traineeid, $accession)  {
         $tags []= "Emtrac";
     }
     // Attending Macro
-    if ($results['AutoDiscrepancy'] != 'None' && $results['AutoDiscrepancy'] != 'Attest' && $results['AutoDiscrepancy'] != 'Agree')  {
+    if ($results['AutoDiscrepancy'] != 'None' && $results['AutoDiscrepancy'] != 'Attest')  {
         $tags []= $results['AutoDiscrepancy'];
     }
     // Macro Revised
@@ -1127,4 +1167,18 @@ function getAdminTagsForUser($traineeid)  {
     return getSingleResultArray($sql);
 }
 
+
+function serializeQueryResult($sql, $filename)  {
+	$results = getResultsFromSQL($sql);
+	$serial = serialize($results);
+	file_put_contents($filename, $serial);
+}
+
+function unserializeQueryResult($filename)  {
+	$s = file_get_contents($filename);
+    $a = unserialize($s);
+	return $a;
+}
+
 ?>
+

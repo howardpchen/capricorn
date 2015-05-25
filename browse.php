@@ -65,7 +65,7 @@ function clickInterval(a) {
     }
 */
     $("#from").datepicker('setDate',a);
-    $("#to").datepicker('setDate',new Date());
+    $("#to").datepicker('setDate', 1);
     $("#range").submit();
 }
 //-->

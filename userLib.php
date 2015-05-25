@@ -22,20 +22,24 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/**************************************
+/*
 userLib.php
+
 Individual institutional level customized functions.
- **************************************/
 
-function isEmtracDone($connection, $acc)  {
-    $sql = "SELECT audit.SecondaryAccessionNumber, fax.Destination FROM vFaxDetails as fax INNER JOIN  vDiagnosticReportOutputAuditTrail as output ON fax.ReportOutputID=output.ReportOutputID INNER JOIN vDiagnosticReportAuditTrail as audit ON audit.AuditEventID=output.AuditEventID WHERE audit.SecondaryAccessionNumber='$acc' AND fax.Destination='emtrac@emrad.uphs.upenn.edu' AND AuditEventTypeName='Email sent';";
+Here houses the functions that are generally institutionally specific 
+and are not guarenteed to work at other places.
 
-    $result = sqlsrv_query($connection, $sql) or die("Can't find answer in RIS");
-    $sqlarray = array();
-    $row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
-    if (sizeof($row) > 0) return True;
-    else return False;
-}
+For instance, at our institution trainees read studies and are overread by
+attendings who assign Major and Minor changes or Additions to the report.
+Attendings can also assign Great Call to encourage trainee for job well
+done.  
+
+As this clinical system is obviously not in place everywhere, the relevant
+functions are separately stored here.
+
+*/
+
 
 function getAllED($startDate, $endDate, $traineeID='')  {
     return getTraineeStudiesByDiscrepancy($startDate, $endDate, "", True, $traineeID, " AND EDNotify=1", True);
@@ -122,7 +126,14 @@ function getMostRecentDiscrepancyCounts($section, $type, $traineeID, $top=200)  
     return getSingleResultArray($sql, True);
 }
 
-// A way to access Primary accession numbers for associated studies in real-time directly from RIS>
+/* 
+
+getPrimaryAccessionNumber(int)
+
+A way to access Primary accession numbers for associated studies in
+real-time directly from RIS 
+*/
+
 function getPrimaryAccessionNumber($accession)  {
     global $RISNameBackup, $connectionInfo;
     if (!$accession) return NULL;

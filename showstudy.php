@@ -52,6 +52,8 @@ if (isset($_GET['tags']) && $_GET['tags'] != '')  {
 if (!isset($_GET['mode'])) $_GET['mode'] = '';
 switch ($_GET['mode'])  {
     case "MajorAttest":
+		//$startDate = thisJulyFirst();
+		$startDate = date_create('2014-07-01'); // Hard coded to when this system went live.
         $results = getTraineeMajorUnreviewed($startDate->format('Y-m-d'), $endDate->format('Y-m-d'), $_SESSION['traineeid']);
         break;
     case "Major":
@@ -96,11 +98,31 @@ if (isset($_GET['ajax']))  {
 if (sizeof($results) == 1000)  {
     echo "Over 1000 results.  Only the first 1000 results displayed.<p>\n";
 }
+
+
+
+if (isset($_GET['header']))  {
+	echo <<< END
+	<link rel="stylesheet" href="css/style.css" />
+	<link rel="stylesheet" href="css/theme.blue.css" />
+	<script src="$URL_root/js/jquery-1.9.1.js"></script>
+	<script src="$URL_root/js/jquery.tablesorter.min.js"></script>
+	<script src="$URL_root/js/jquery.tablesorter.widgets.js"></script>
+END;
+	include_once "header.php";
+} 
+
+else  {
+	echo <<< END
+	<link rel="stylesheet" href="css/style.css" />
+	<link rel="stylesheet" href="css/theme.blue.css" />
+	<script src="$URL_root/js/jquery.tablesorter.min.js"></script>
+	<script src="$URL_root/js/jquery.tablesorter.widgets.js"></script>
+END;
+}
+
 ?>
 
-<body>
-<link rel="stylesheet" href="css/style.css" />
-<script src="<?php echo $URL_root; ?>js/jquery.tablesorter.min.js"></script>
 <a href="showstudy_excel.php?<?php echo http_build_query($_GET);?>">Export to Excel</a><p>
 
 <?php
@@ -118,8 +140,16 @@ echo $htmlprint;
 
 <script>
 $(function(){
-    $('#resultsTable').tablesorter(); 
+    $('.results').tablesorter({
+		theme: 'blue',
+		widgets: ['zebra', 'filter'],
+		ignoreCase:true,
+		widgetOption: {
+			filter_onlyAvail: 'dropdownFilter'
+		}
+	}); 
 });
+
 
 // construct the cookie which allows "Next" and "Prev" function in the report display.
 document.cookie = "acc=<?php echo implode(",",$accessions);?>; path=/";

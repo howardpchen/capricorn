@@ -16,9 +16,32 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
 
+<!--
+
+checklogin.php
+
+Login script which uses LDAP to allow users to login using a unified
+system.  However, this script is institution dependent, and therefore
+requires a a fair bit of customization.  The code below is provided as an
+example and probably won't work at your institution without modification.
+
+The general procedure is this:
+
+1) Check for the identity of the user 
+
+2) Query ResidentIDDefinition to identify the user that has just logged in.
+
+3) Set $_SESSION['traineeid'] to the appropriate Trainee ID.
+
+You would want to include a check to identify potential Administrators.
+This is institution-specific as well. You *could* use database flags to
+identify which users are admins, but I have chosen to code it in this
+section because the administrative functions are under development.
 
 -->
+
 <?php
 include "config/capricornConfig.php";
 include "capricornLib.php";

@@ -68,24 +68,12 @@ if (!isset($_SESSION['traineeid']))  {
     header('location:./');
 } 
 
-$conn2 = sqlsrv_connect($RISNameBackup, $connectionInfo);
-if (!$conn2) {
-    $conn2 = sqlsrv_connect($RISName, $connectionInfo);
-    if (!$conn2)  {
-        echo "Capricorn depends on the RIS mirror, which is currently refreshing.  This usually lasts a few minutes.  Try again soon.\n";    
-        exit();
-    }
-    //die(print_r(sqlsrv_errors(), true));
-}
 //RIS tables.  These are used to display the most up-to-date final report.
-$table1 = "vusrExamDiagnosticReportText";
-$table2 = "vDxRptContributingResponsible";
-$table3 = "vusrExamLog";
 
 if (!isset($_GET['acc'])) die (print_r("Faulty parameters."));
 
 //If available, will attempt to get Prelim report from Capricorn.
-
+/*
 $sql = "SELECT PreliminaryReportText FROM ExamReportText INNER JOIN ExamMeta ON ExamReportText.AccessionNumber=ExamMeta.PrimaryAccessionNumber WHERE ExamMeta.AccessionNumber='" . $_GET['acc'] . "'";
 
 $result = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
@@ -95,24 +83,33 @@ if ($row) $prelimText = $row[0]['PreliminaryReportText'];
 else  {
     $prelimText = "Preliminary report for this study is not currently stored in Capricorn's database.";
 }
+*/
+$prelimText = "Preliminary report for this study is not currently stored in Capricorn's database.";
 
-// Get final report as well as demographic information.
-$sql = "SELECT * FROM vusrExamDiagnosticReportText INNER JOIN vDiagnosticReportText as dxtext ON vusrExamDiagnosticReportText.PrimaryInternalExamID=dxtext.ActivityHeaderID WHERE AccessionNumber='" . $_GET['acc'] . "'";
-$result = sqlsrv_query($conn2, $sql); /** or die("Can't find answer in RIS"); **/
-$row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
+$sql = "
+SELECT ResidentIDDefinition.FirstName AS ResFirstName, ResidentIDDefinition.LastName AS ResLastName, AttendingIDDefinition.FirstName AS AttFirstName, AttendingIDDefinition.LastName AS AttLastName, ExamMeta.FirstName AS PtFirstName, ExamMeta.LastName AS PtLastName, ExamMeta.CompletedDTTM AS CompletedDTTM, ExamCodeDefinition.ExamCode AS ExamCode, ExamCodeDefinition.Description AS ExamDesc, FinalReportText 
+FROM ExamReportText 
+INNER JOIN ExamMeta ON ExamReportText.AccessionNumber=ExamMeta.PrimaryAccessionNumber 
+INNER JOIN ResidentIDDefinition ON ExamMeta.TraineeID=ResidentIDDefinition.TraineeID 
+INNER JOIN AttendingIDDefinition ON ExamMeta.AttendingID=AttendingIDDefinition.AttendingID 
+INNER JOIN ExamCodeDefinition ON ExamCodeDefinition.ExamCode=ExamMeta.ExamCode 
+AND ExamCodeDefinition.ORG=ExamMeta.Organization 
+WHERE ExamMeta.AccessionNumber='" . $_GET['acc'] . "'";
 
-$sql2 = "SELECT * FROM $table2 WHERE AccessionNumber='" . $_GET['acc'] . "'";
-$result2 = sqlsrv_query($conn2, $sql2); /** or die("Can't find answer in RIS"); **/
-
-$sql3 = "SELECT * FROM $table3 WHERE AccessionNumber='" . $_GET['acc'] . "'";
-$result3 = sqlsrv_query($conn2, $sql3); /** or die("Can't find answer in RIS"); **/
-if (!$row)  {
-    $sql = "SELECT * FROM vusrExamDiagnosticReportText WHERE AccessionNumber='" . $_GET['acc'] . "'";
-    $result = sqlsrv_query($conn2, $sql); /** or die("Can't find answer in RIS"); **/
-    $row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
+$result = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
+$finalText = '';
+$row = $result->fetch_all(MYSQL_ASSOC);
+if ($row)  {
+    $finalText = $row[0]['FinalReportText'];
+    $finalText = str_replace("\r\n", '<br>', $finalText);
 }
+else  {
+    $finalText= "Report for this study is not currently stored in Capricorn's database.";
+}
+
 if (!$row) {    
-    echo "Invalid accession number.";    
+    echo "<br><br>Accession number not found.";
+	exit();
 }    
 else { 
     echo "<div class='row'><div class='6u reportHeader'>Accession " . $_GET['acc'] . "</div><div class='6u' id='userTags'></div></div>";
@@ -123,47 +120,27 @@ else {
     }
 
     //  Insert code for control panel depending on admin status.
-    if (isAdmin())  {
+    if (isAdmin() && $_SESSION['adminid'] > 99000000)  {
         include_once "admin/discrepancyControl.php";
-    } else  {
+    } else if (isAdmin() && $_SESSION['adminid'] >98000000)  {
+		include_once "admin/discrepancyControlView.php";
+	} else  {
         include_once "reportControl.php";
     }
+    $patientDemo = array();
+    $patientDemo['Name'] = $row[0]['PtLastName'] . ', ' .
+    $row[0]['PtFirstName'];
+    $patientDemo['Exam'] = $row[0]['ExamDesc'];
+    $patientDemo['Completed'] = $row[0]['CompletedDTTM'];
 
-    $sqlarray = array();
-    $row3 = sqlsrv_fetch_array($result3, SQLSRV_FETCH_ASSOC);
-    if (!$row3)  {
-        $patientDemo = array();
-        $patientDemo['Exam'] = $row['ExamDesc'];
-        foreach ($patientDemo as $k=>$p)  {
-            echo "$k: $p<br>\n";
-        }
-
-        echo "Accession number found, but no interpretation report is currently available.  This means either it has not been interpreted, or Capricorn has not yet syncrhonized it with the database.<P><strong>However, you can still assign tags to this study.<P>Your input will be synchronized once the report becomes available.</strong>";
-        exit();
-    } else {
-        tableStartSection('Exam Metadata', 0, isAdmin());    
-		 
-        $patientDemo = array();
-        $patientDemo['Name'] = $row3['PatientLastName'] . ', ' . $row3['PatientFirstName'];
-        $patientDemo['DOB'] = $row3['PatientDOB']->format('m/d/Y');
-        $birthDate = explode("/", $patientDemo['DOB']);
-        $patientDemo['Age'] = (date("md", date("U", mktime(0, 0, 0, $birthDate[0], $birthDate[1], $birthDate[2]))) > date("md")
-                ? ((date("Y") - $birthDate[2]) - 1)
-                : (date("Y") - $birthDate[2]));
-        $patientDemo['Sex'] = $row3['PatientSex'];
-        $patientDemo['Exam'] = $row3['ExamDesc'];
-        $patientDemo['Completed'] = $row3['CompletedDTTM']->format('m/d/Y H:i:s');
-        $patientDemo['Requested By'] = $row3['RequestingProviderName'];
-
-        $report = str_replace("\n", "<BR>", $row['ReportText']);
-        foreach ($patientDemo as $k=>$p)  {
-            echo "$k: $p<br>\n";
-        }
-        tableEndSection();
+    tableStartSection('Exam Metadata', 0, isAdmin());
+    foreach ($patientDemo as $k=>$p)  {
+        echo "$k: $p<br>\n";
     }
+    tableEndSection();
 }
 
-$finalText = $row['ReportText'];
+//$finalText = $row['ReportText'];
 
 /* END UPHS SPECIFIC CODE */
 
@@ -172,19 +149,11 @@ $finalText = $row['ReportText'];
 <div id="tabs">
 <ul>
 <?php 
-    if (isAdmin())  {
-        echo <<< END
-        <li><a href="#diff">Show Changes</a></li>
-        <li><a href="#final">Final</a></li>
-        <li><a href="#prelim">Preliminary</a></li>
+echo <<< END
+<li><a href="#final">Final</a></li>
+<li><a href="#prelim">Preliminary</a></li>
+<li><a href="#diff">Show Changes</a></li>
 END;
-    } else  {
-        echo <<< END
-        <li><a href="#final">Final</a></li>
-        <li><a href="#prelim">Preliminary</a></li>
-        <li><a href="#diff">Show Changes</a></li>
-END;
-    }
 ?>
 </ul>
 <div id="diff">
@@ -221,20 +190,16 @@ if (typeof(window.opener.updateCurrentStudy) === "function")  {
 
 <?php
 if ($row)  {
+
     tableStartSection('Providers', 0, isAdmin());
-    echo "Contributing Provider(s):<br>";
-    $count = 0;
-    while ($row2 = sqlsrv_fetch_array($result2, SQLSRV_FETCH_ASSOC))  {
-        echo ++$count . ". " . $row2['ProviderFirst'] . " " . $row2['ProviderLast'] . ", " . $row2['ProviderTitle'] . "<br>";
-        //        echo $row['ReportText'];
-    }
+    echo "Resident: ";
+    echo $row[0]['ResFirstName'] . " " . $row[0]['ResLastName'];
+    echo "<p>Attending: ";
+    echo $row[0]['AttFirstName'] . " " . $row[0]['AttLastName'];
 
-    echo "<br>Responsible Provider: " . $row['Interp1FirstName'] . " " . $row['Interp1LastName'] . ", " . $row['Interp1TitleName'];
     tableEndSection();
-}
-sqlsrv_free_stmt($result);
-sqlsrv_close($conn2);
 
+}
 ?>
 </div>
 

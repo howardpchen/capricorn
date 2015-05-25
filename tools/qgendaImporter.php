@@ -15,7 +15,6 @@ $sourceFileOrURL = "University_of_Pennsylvania_-_Radiology_Department_Staff_Repo
 */
 
 
-
 $singleDayCalls = array();
 /*
 Currently this script differentiates between single day calls and call rotations (e.g. nightfloat), so that 2+ consecutive days of Body Call, if anyone is thus unfortunate, would shows up separately.

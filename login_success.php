@@ -9,7 +9,7 @@
 <script src="<?php echo $URL_root; ?>js/highcharts.js"></script>
 <script src="<?php echo $URL_root; ?>js/collapseTable.js"></script>
 <script type='text/javascript' src="<?php echo $URL_root; ?>js/chardinjs.min.js"></script>
-<Title>Capricorn - Home</title>
+<Title>Capricorn - Home </title>
 </head>
 <?php include "header.php"; 
 $adminTagAll = getAdminTagsForUser($_SESSION['traineeid']);
@@ -21,7 +21,7 @@ $userTags = getUserTags($_SESSION['traineeid']) ;
 $sharedTags = getSharedTags();
 ?>
 
-<?php include "stats_classcomparison.php"; ?>
+<?php //include "stats_classcomparison.php"; ?>
 
 <script>
 
@@ -72,7 +72,7 @@ $( "#callFrom" ).datepicker({
 changeMonth: true,
 numberOfMonths: 1
 });
-$("#callFrom").datepicker('setDate', -1);
+$("#callFrom").datepicker('setDate', -2);
 
 $( "#to" ).datepicker({
 changeMonth: true,
@@ -94,7 +94,7 @@ var aj = $.ajax({
 	success: function(data) {
 		var d = $.trim(data).split(',');
 		if (d[1] == "0") d[1] = "no"
-		$("#majorWarnCount").text("You have " + d[1] + " unreviewed major change(s).");
+		$("#majorWarnCount").text("You have " + d[1] + " required studies pending review.");
 	}
 });
 
@@ -103,7 +103,10 @@ var aj = $.ajax({
 });
 
 function loadList(keyword)  {
-    loadDialog('Discrepancies', '<?php echo $URL_root;?>showstudy.php?mode=' + escape(keyword), false);
+	from = $('#discSince').val();
+	day = "9999";
+    loadDialog('Discrepancies', '<?php echo $URL_root;?>showstudy.php?mode=' + escape(keyword) + "&from=" + from + "&day=" + day, false);
+
 }
 
 function updateAjax()  {
@@ -111,9 +114,11 @@ function updateAjax()  {
     for (var key in ajaxQueue)  {
         if (ajaxQueue.hasOwnProperty(key))  {
             var val = ajaxQueue[key];
+			from = $('#discSince').val();
+			day = "9999";
             $("#"+key).html(loadingString);
             var aj = $.ajax({
-                url: "<?php echo $URL_root; ?>/showstudy.php?ajax="+key+"&mode="+val,
+                url: "<?php echo $URL_root; ?>/showstudy.php?ajax="+key+"&mode="+val+"&day="+day+"&from="+from,
                 success: function(data) {
                     var d = $.trim(data).split(',');
 					if (d[0] == 'majorAttestCount' && Number(d[1])>0)  {
@@ -219,20 +224,21 @@ function clickInterval(a) {
 
 </script>
 
-
 <?php
 tableStartSection("Discrepancy Worklist",0);
 ?><br>
 <div class="row" data-intro="Click on a button to view the data.">
 <div class="6u">
 <center>
-<a class="mainMenuButton" href="javascript:loadSearch('reviewAll');">Review My Cases From... </a>
+<a class="mainMenuButton" href="javascript:loadSearch('reviewAll');"><div class='fa fa-check'>&nbsp;</div>Review Cases From </a>
 <form id='reviewAll'>
     <input type="text" style="font-size:12pt;background-color:#cdf;border-radius:5px;border-color:#AAF;font-weight:900; color:#000;" size=10 id="callFrom" name="from" />
 	<select name="day" title="Need more options? Use Advanced functions below.">
 		<option value='2' selected>over 2 days
 		<option value='7'>over 7 days
 		<option value='14'>over 14 days
+		<option value='99999'>everything since
+
 	</select>
 	<input type="hidden" value='All' name="mode" />
 	<input type="hidden" value='' name="sec" />
@@ -240,15 +246,20 @@ tableStartSection("Discrepancy Worklist",0);
 	<input type="hidden" value='' name="notes" />
 
 </form>
-<div id="majorWarnCount"></div>
 </center>
 </div>
 <div class="6u">
-<center><a class="mainMenuButton" href="javascript:$('#discrep').slideDown(500)&&updateAjax();">By Discrepancy Types</a><br>
-Takes a few seconds for Capricorn to do the math.
+<center><a class="mainMenuButton" href="javascript:$('#discrep').slideDown(500)&&updateAjax();"><div class='fa fa-sort-amount-asc'>&nbsp;</div>By Discrepancy Types</a><br>
+<form><select id='discSince'>
+<option value='<?php echo thisJulyFirst()->format('Y-m-d');?>'>This Academic Year Only (July 1)
+<option value='1990-01-01'>Show Everything
+</select></form>
+<div id="majorWarnCount"></div>
 </center>
 </div>
+
 </div>
+
 <div id="discrep" class="row" style="display:none">
 <div class="3u">
 <center><a class="mainMenuButton" href="javascript:loadList('MajorAttest');">Pending Review</a>
@@ -257,19 +268,19 @@ Takes a few seconds for Capricorn to do the math.
 </div>
 <div class="3u">
 <center>
-<a class="mainMenuButton" href="javascript:loadList('Major');">All Major</a>
+<a class="mainMenuButton" href="javascript:loadList('Major');"><div class='fa fa-exclamation-circle'>&nbsp;</div>Major</a>
 <p id="majorCount"></p>
 </center>
 </div>
 <div class="3u">
 <center>
-<a class="mainMenuButton" href="javascript:loadList('Emtrac');">Emtrac</a>
+<a class="mainMenuButton" href="javascript:loadList('Emtrac');"><div class='fa fa-ambulance'>&nbsp;</div>Emtrac</a>
 <p id="emtracCount"></p>
 </center>
 </div>
 <div class="3u">
 <center>
-<a class="mainMenuButton" href="javascript:loadList('GreatCall');">Great Call!</a>
+<a class="mainMenuButton" href="javascript:loadList('GreatCall');"><div class='fa fa-thumbs-o-up'>&nbsp;</div>Great Call</a>
 <p id="gcCount"></p>
 </center>
 </div>
@@ -298,17 +309,21 @@ Takes a few seconds for Capricorn to do the math.
 </center>
 </div>
 </div>
-
+<div class="row">
+<div class="6u">
+<center><a class="mainMenuButton" href="reviewByGroup.php"><div class='fa fa-bar-chart-o'>&nbsp;</div>Analyze</a><br></center>
+</div>
+</div>
 <?php
 tableEndSection();
 ?>
 
 <p>
 <?php
-tableStartSection("Volumetrics",0, True);
+tableStartSection("Volumetrics",0, False);
 ?><br>
 <div class="row" data-intro="Click on a button to view the data.">
-<div class="4u" align="center"> <a class="mainMenuButton" href="browse.php"><div class='fa fa-search'>&nbsp;</div>Browse</a></div>
+<div class="4u" align="center"> <a class="mainMenuButton" href="browse.php"><div class='fa fa-area-chart'>&nbsp;</div>Rotation Volume</a></div>
 <?php
 if (isResident()) {
 echo <<< END
@@ -319,6 +334,10 @@ END;
 }
 
 ?>
+</div>
+<div class="row">
+<div class="6u" align="center"> <a class="mainMenuButton"
+href="studylog.php"><div class='fa fa-list'>&nbsp;</div>Full UPHS Case Log</a><br><a href="studylog_txt.php">Text Version (faster)</a></div>
 
 </div>
 </div>
@@ -387,16 +406,16 @@ foreach ($examSelection as $sel) {
 }
 
 ?></select><br>
+    Hint: If you are not getting the right results, check your date range.<br>
     <input type=button onClick="loadSearch('searchForm')" value="Go">
 
     
     </form>
     <p style='font-size:8pt'><strong>Examples (Section - Modality - Special):</strong><br>
 <u>Coronary CTA</u>: CVI - CT Angiography - CARDIAC <br>
-<u>Biopsies</u>: All - All - BIOPSY <br>
+<u>PE Chest CT</u>: Chest - All - PULM EMB<br>
 <u>Drainage</u>: All - All - DRAINAGE <br>
 <u>I-131 Tx</u>: Nuclear Medicine - Procedures - All <br>
-Check your dates.
 </p>
 <?php tableEndSection(); ?>
 </div>
@@ -410,3 +429,4 @@ Check your dates.
 <p align=center><?php echo $inclusionNote ?></p>
 <p align=center><A HREF="logout.php">Log Out</A></P></div>
 <?php include "footer.php"; ob_end_flush(); ?>
+

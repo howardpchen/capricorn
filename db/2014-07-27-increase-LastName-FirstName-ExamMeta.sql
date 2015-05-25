@@ -5,5 +5,5 @@
 
 use `capricorn`;
 
-alter table ExamMeta modify column LastName varchar(32) NOT NULL;
-alter table ExamMeta modify column FirstName varchar(32) NOT NULL;
+alter table ExamMeta modify column LastName varchar(35) NOT NULL;
+alter table ExamMeta modify column FirstName varchar(35) NOT NULL;

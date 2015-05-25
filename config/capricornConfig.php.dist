@@ -26,31 +26,27 @@ System-Wide Configurations
 
 $log_flag = True; // set to false to disable logging.
 $timezone_string = 'America/New_York';  // Standard timezone string.
-$file_root = "/xampp/htdocs/capricorn/";  // the local file path
+$file_root = "/rootpath/capricorn/";  // the local file path
 $log_path = "../capricorn.log/"; // Relative to $file_root
 $URL_root = "/capricorn/";  // With trailing slash (/)
-date_default_timezone_set($timezone_string);
 
-// This is the Capricorn Database information
 $mysql_host = 'localhost';
-$mysql_username = 'capricorn_username';
-$mysql_passwd = 'capricorn_password';
+$mysql_username = 'username';
+$mysql_passwd = 'password';
 $mysql_database = 'capricorn';
 
-// This portion of the code is for updating Capricorn using RIS.
-// Also used to display actual study report by displayReport.php
-$RISName = "blahblah.uphs.upenn.edu";
-$RISDatabase = "risdatabase_table";
-$RISLogin = "risusername";
-$RISPwd = "rispassword";
-$RISDatabase = "risdatabasename";
+$RISName = "path.to.your.institutional.database";
+$RISNameBackup = "path.to.your.institutional.database"; // Incase you have more than one.
+$RISDatabase = "RIS data base name";
+$RISLogin = "login";
+$RISPwd = "password";
 
 // Theme colors.
-$schemaColor[0] = '#000072';          // Darkest
+$schemaColor[0] = '#000072';    // Darkest
 $schemaColor[1] = '#CCDDFF';          // Table Headers
 $schemaColor[2] = '#F0F0F7';          //Table background
 
-// Graph colors based on section.
+// Graph colors based on section and discrepancies.
 $graphColor['CHEST'] = '#088DC7';
 $graphColor['BODY'] = '#50B432';
 $graphColor['MSK'] = '#ED561B';
@@ -68,6 +64,7 @@ $graphColor['Addition']='#44DD66';
 $graphColor['Agree']='#6666FF';
 $graphColor['GreatCall']='#33CCFF';
 
+
 // Dictionary to change shorthand codes to human-friendly text.
 $replaceDict = [ 
     "CHEST" => "Chest", 
@@ -77,7 +74,7 @@ $replaceDict = [
     "CR" => "Radiography",
     "CT" => "Computed Tomography",
     "CTA" => "CT Angiography",
-    "DEXA" => "Dual-Energy X-Ray Absorptiometry",
+    "DEXA" => "DEXA Scan",
     "FLUO" => "Fluoroscopy",
     "FMRI" => "fMRI",
     "BREAST" => "Breast",
@@ -90,23 +87,44 @@ $replaceDict = [
     "PET" => "PET (without CT)",
     "PROCED" => "Procedures",
     "SPECT" => "SPECT",
-    "SPINE" => "Spine (Neuro or MSK)",
+    "SPINE" => "Spine",
     "US" => "Ultrasound", 
     "SCINT" =>"Scintigraphy",
     "MISC" => "Miscellaneous"
     ];
 
-// This text is included in login_success.php
+// This text is included in login_success.php.  Change to suit your institution.
 $inclusionNote = "Note: Currently Capricorn includes only HUP, PMC, PAH, and VF interpretations.  <br>CHOP and VA are notably <u>not</u> included.";
 
+// Among rotations defined in ResidentRotation, the following are hardcoded as 'calls'.
+// The value is an array for start time and duration.
+// For instance... RES - Baby Call in this case starts at 5PM (PT17H = 1700 hr) and lasts for 4.5 hours (PT4H30M).
+// Capricorn will automatically use this data to extract call cases for a resident's shift, provided the rotation integration works.
+
+$callRotation = array(
+    "RES - Baby Call"           => array ("PT17H", "PT4H30M"),
+    "RES - BU Baby Call"           => array ("PT17H", "PT4H30M"),
+    "FEL - Body Call (5-10:30)" => array ("PT17H", "PT5H30M"),
+    "FEL - Body Call (backup)"  => array ("PT17H", "PT5H30M"),
+    "RES - Body Call (5-10:30)" => array ("PT17H", "PT5H30M"),
+    "CALL"                      => array (NULL, NULL),
+    "FEL - Res/Fel Call"        => array (NULL, NULL),
+    "RES - BU Body Wknd"        => array ("PT7H", "PT12H"),
+    "RES - BU Chest Wknd"       => array ("PT7H", "PT12H"),
+    "RES - BU Dayfloat"         => array ("PT7H", "PT12H"),
+    "RES - BU Nightfloat"       => array ("PT21H30M", "PT9H30M"),
+    "RES - Call Body Wknd"      => array ("PT7H", "PT12H"),
+    "RES - Call Chest Wknd"     => array ("PT7H", "PT12H"),
+    "RES - Dayfloat"            => array ("PT7H", "PT12H"),
+    "RES - Nightfloat"          => array ("PT21H30M", "PT9H30M"),
+    "FEL - MRI (5-10)"          => array ("PT17H", "PT14H"),
+);
 
 //Exclude these modalityes on the modality selection under browse function.
 $excludeBrowse = array();
 $excludeBrowse []= "3D";
 $excludeBrowse []= "MISC";
 $excludeBrowse []= "DEXA";
-
-
 
 // Set this array in order to exclude rotations
 // the comparison is done with regular expressions
@@ -116,7 +134,6 @@ $excludeBrowse []= "DEXA";
 
 $excludedRotations = array();
 $excludedRotations []= "/VA/";
-
 
 // Resident Productivity Goal
 // This value is used in stats_classcomparison.php
@@ -129,8 +146,27 @@ $statisticsDefault['Type'] = 'CHEST';
 $statisticsDefault['Section'] = 'CR';
 $statisticsDefault['Notes'] = '';
 
-// List of discrepancy strings used for Call studies only.
+/**************************************************************************
 
+This section contains Discrepancy-related features.
+
+At our institution, residents provide preliminary reports without attending
+supervision overnight.  The next morning, attendings are required to addend the
+prelminary report without modifying the actual text.  The attendings then use
+specific text shortcut / macro to desinate the level of change.
+
+For instance "macro agree" inserts an agreement without modification.  "Macro
+Major Change" would insert a standardized statement stating that significant
+change from the preliminary report follows.
+
+Capricorn has the ability to extract these statements to categorize each
+trainee's interpretation by discrepancy category and perform relevant
+analytics.
+
+****************************************************************************/
+
+
+// List of discrepancy strings used for Call studies only.
 $discrepancyCallString = array(
     "GreatCall",
     "MajorChange",
@@ -140,23 +176,40 @@ $discrepancyCallString = array(
 );
 
 // Regular expression used for matching discrepancy markers, some used for call and some used for day-time.
-// Note that Attest is not in $discrepancyCallString.  This means that it defines 
-// a designation used for day-time studies only.
 
-$discrepancyString['GreatCall'] = '/\*\*\*ATTENDING RADIOLOGIST AGREEMENT/';
+$discrepancyString['GreatCall'] = '/\*\*\*ATTENDING RADIOLOGIST/';
 $discrepancyString['Agree'] = '/agree with the preliminary report without modification/';
 $discrepancyString['Attest'] = '/and agree with this report/';
 $discrepancyString['MajorChange'] = '/\*\*ATTENDING RADIOLOGIST CHANGE/';
 $discrepancyString['MinorChange'] = '/ATTENDING RADIOLOGIST CHANGE/';
 $discrepancyString['Addition'] = '/ATTENDING RADIOLOGIST ADDITION/';
 
-//  If review is required for a designation, then when the trainee views the report 
-//  there will be an option to mark the study as reviewed OR to flag it for admin attention.
 
 $discrepancyReviewRequired = array();
 $discrepancyReviewRequired []= 'MajorChange';
 $adminTraineeID = '99999999'; // Special traineeid reserved for admin (e.g. residency director).
 
+// These define the studies eligible for call discrepancies.
+
+$callStudies = array(
+    array("CR", "CHEST"),
+    array("CT", "CHEST"),
+    array("CR", "MSK"),
+    array("CT", "MSK"),
+    array("CR", "BODY"),
+    array("CT", "BODY"),
+    array("US", "US"),
+    array("MR", "NEURO"),
+    array("CT", "NEURO"),
+    array("MR", "SPINE"),
+    array("CT", "SPINE"),
+    array("FLUO", "GI"),
+    array("FLUO", "GU"),
+    array("SCINT", "NM")
+);
+$recentCountLimit = 50;    // For 'recent call studies' set the # of studies here to use for those calculations here.
+
 $adminPrivateTagPrefix = '*';
 
 ?>
+

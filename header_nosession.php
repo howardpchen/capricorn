@@ -6,7 +6,7 @@
 		<script src="<?php echo $URL_root; ?>js/skel-panels.min.js"></script>
         <script type='text/javascript' src="<?php echo $URL_root; ?>js/chardinjs.min.js"></script>
 
-        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
         <link rel="stylesheet" href="<?php echo $URL_root; ?>css/skel-noscript.css" />
         <link rel="stylesheet" href="<?php echo $URL_root; ?>css/style.css" />
         <link rel="stylesheet" href="<?php echo $URL_root; ?>css/style-desktop.css" />
@@ -65,7 +65,7 @@ if (isset($_SESSION['traineeid'])) {
 					<div class="inner">
 						<div class="container">
 <!--[if lte IE 9]>
-You are using an older browser.  Although there are cosmetic differences, key functionalities are available. Please consider updating your browser to the newest version.
+You are using an older browser.  Although there are cosmetic differences, key functionalities are available. Please consider updating to the newest version.  Alternatively, use Mozilla Firefox or Google Chrome.
 <![endif]-->
 <!-- <h4 align=center><font color="gray">Data is ficticious and for demonstration purpose only.</font></h4> -->
 
