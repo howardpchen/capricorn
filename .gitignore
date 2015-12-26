@@ -6,3 +6,6 @@ log/*
 run*.php
 *.ics
 *.tmp
+post-epic
+tools/batchUpdate*
+*.txt
