@@ -9,3 +9,4 @@ run*.php
 post-epic
 tools/batchUpdate*
 *.txt
+updateRes.pah.php
