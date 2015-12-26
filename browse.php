@@ -65,7 +65,7 @@ function clickInterval(a) {
     }
 */
     $("#from").datepicker('setDate',a);
-    $("#to").datepicker('setDate',new Date());
+    $("#to").datepicker('setDate', 1);
     $("#range").submit();
 }
 //-->
@@ -105,6 +105,10 @@ $calls = array();
 
 
 foreach ($rotations as $r) {
+    if (!startsWith($r['Rotation'], 'RES') 
+        && !startsWith($r['Rotation'], 'FEL')
+        && !startsWith($r['Rotation'], 'DEPT - Special Winter Vac')
+        && !startsWith($r['Rotation'], 'VAC')) continue;
 
     $today = date_create('NOW');
     $startD = date_create($r['RotationStartDate']);
@@ -129,7 +133,7 @@ tableEndSection();
 ?>
 </div>
 <?php
-tableStartSection("Previous 2013-2014", 0);
+tableStartSection("Previous", 0);
 foreach ($prev as $r) {
     $r['RotationStartDate'] = str_replace("-", "/", $r['RotationStartDate']);
     $r['RotationEndDate'] = str_replace("-", "/", $r['RotationEndDate']);
@@ -154,9 +158,9 @@ if (isset($_GET['rota'])) {
 <div class='control' data-intro="Control Panel to select date range and display style." data-position="right">
 <form id="range">
 <label for="from" >From</label>
-<input style="border:solid 1px;background:none" type="text" size=10 id="from" name="from" />
+<input type="text" size=10 id="from" name="from" />
 <label for="to">to</label>
-<input style="border:solid 1px;background:none" type="text" size=10 id="to" name="to"/> 
+<input type="text" size=10 id="to" name="to"/> 
 <label><input type="checkbox" title="Total studies interpreted versus daily counts." onClick="$('#range').submit();" id="cumulative" name="cumulative" value="Y" <?php echo $cumulative?"checked":""?>>Cumulative</label>
 <input type="submit" id="sub" value="Go" /><br>
 <label>Modality:
@@ -187,7 +191,8 @@ foreach ($examType as $type) {
 Past: [ <a href="#" onclick="clickInterval(-31)">1 month</a> | 
 <a href="#" onclick="clickInterval(-183)">6 months</a> | 
 <a href="#" onclick="clickInterval(-365)" title="May take up to 1 minute to process. Speed things up by selecting a specific modality.">1 year</a> |
-<a href="#" onclick="clickInterval(-1431)" title="May take up to 5 minutes to process.  Speed things up by selecting a specific modality.">4 years</a> ]
+<a href="#" onclick="clickInterval(-730)" title="May take up to 2 minute to process. Speed things up by selecting a specific modality.">2 years</a> |
+<a href="#" onclick="clickInterval(-1460)" title="May take up to 5 minutes to process.  Speed things up by selecting a specific modality.">4 years</a> ]
 
 </div>
 <p>
@@ -209,3 +214,5 @@ if (isset($_GET['mod']) && $_GET['mod'] != '')  {
 include "footer.php";
 ob_end_flush();
 ?>
+
+

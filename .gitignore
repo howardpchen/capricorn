@@ -2,3 +2,7 @@ config/capricornConfig.php
 config/ldapconf.php
 log/*
 *~
+*.bak
+run*.php
+*.ics
+*.tmp

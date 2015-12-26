@@ -2,34 +2,38 @@ Capricorn Installation Instructions
 
 Part A - Getting Data into Capricorn
 
+Capricorn-MySQL.sql will create the basic necessary tables on your MySQL server. 
+
 Data from your RIS or data warehouse is loaded into our ExamMeta table.
 
 Columns are as follows:
-+-----------------+-------------+------+-----+---------+-------+
-| Field           | Type        | Null | Key | Default | Extra |
-+-----------------+-------------+------+-----+---------+-------+
-| InternalID      | varchar(30) | NO   | PRI | NULL    |       |
-| AccessionNumber | varchar(8)  | YES  |     | NULL    |       |
-| LastName        | varchar(25) | NO   |     | NULL    |       |
-| FirstName       | varchar(25) | NO   |     | NULL    |       |
-| PatientID       | tinyint(11) | NO   |     | NULL    |       |
-| ExamCode        | varchar(16) | YES  |     | NULL    |       |
-| TraineeID       | int(11)     | YES  | MUL | NULL    |       |
-| AttendingID     | int(11)     | YES  |     | NULL    |       |
-| OrganizationID  | int(11)     | YES  |     | NULL    |       |
-| Organization    | varchar(8)  | NO   |     | NULL    |       |
-| CompletedDTTM   | datetime    | YES  | MUL | NULL    |       |
-| InquiryDTTM     | datetime    | YES  |     | NULL    |       |
-| DraftDTTM       | datetime    | YES  |     | NULL    |       |
-| PrelimDTTM      | datetime    | YES  |     | NULL    |       |
-| ResidentYear    | int(11)     | YES  |     | NULL    |       |
-+-----------------+-------------+------+-----+---------+-------+
++------------------------+-------------+------+-----+---------+-------+
+| Field                  | Type        | Null | Key | Default | Extra |
++------------------------+-------------+------+-----+---------+-------+
+| InternalID             | varchar(30) | NO   | PRI | NULL    |       |
+| AccessionNumber        | varchar(15) | YES  |     | NULL    |       |
+| PrimaryAccessionNumber | varchar(15) | YES  |     | NULL    |       |
+| LastName               | varchar(25) | NO   |     |         |       |
+| FirstName              | varchar(25) | NO   |     |         |       |
+| PatientID              | int(11)     | NO   |     |         |       |
+| Location               | varchar(1)  | NO   |     |         |       |
+| ExamCode               | varchar(16) | YES  |     | NULL    |       |
+| TraineeID              | int(11)     | YES  | MUL | NULL    |       |
+| AttendingID            | int(11)     | YES  |     | NULL    |       |
+| OrganizationID         | int(11)     | YES  |     | NULL    |       |
+| Organization           | varchar(8)  | NO   |     |         |       |
+| CompletedDTTM          | datetime    | YES  | MUL | NULL    |       |
+| InquiryDTTM            | datetime    | YES  |     | NULL    |       |
+| DraftDTTM              | datetime    | YES  |     | NULL    |       |
+| PrelimDTTM             | datetime    | YES  |     | NULL    |       |
+| ResidentYear           | int(11)     | YES  |     | NULL    |       |
++------------------------+-------------+------+-----+---------+-------+
 
 In our installation we use tools/updateExam.php to pull from a shadow copy of our RIS database.
+
 You will need to find a similar mechanism to populate this information in your institution.
 
-Codes in the ExamCodeDefinition table will also need to be loaded from your chargemaster.  You will need to assign
-values for Section, Type, to teach exam code.  
+Codes in the ExamCodeDefinition table will also need to be loaded from your chargemaster.  You will need to assign values for Section, Type, to teach exam code.  
 
 ExamCodeDefinition
 +--------------+-------------+------+-----+---------+-------+
@@ -66,7 +70,7 @@ ResidentRotation
 
 The Resident IDs table needs to be populated.  We use the same value for TraineeID as our RIS, but you may want to map to another standard.
 
-residentiddescription
+residentiddefinition
 +------------------+-------------+------+-----+---------+-------+
 | Field            | Type        | Null | Key | Default | Extra |
 +------------------+-------------+------+-----+---------+-------+
@@ -74,7 +78,9 @@ residentiddescription
 | FirstName        | varchar(25) | NO   |     | NULL    |       |
 | MiddleName       | varchar(25) | NO   |     |         |       |
 | LastName         | varchar(25) | NO   |     | NULL    |       |
-| IsCurrentTrainee | bool        | NO   |     | 0       |       |
+| IsCurrentTrainee | binary(1)   | NO   |     | 0       |       |
+| IsResident       | binary(1)   | NO   |     | 0       |       |
+| IsFellow         | binary(1)   | NO   |     | 0       |       |
 | StartDate        | date        | NO   |     | NULL    |       |
 | QGendaName       | varchar(25) | YES  |     | NULL    |       |
 +------------------+-------------+------+-----+---------+-------+
@@ -106,6 +112,18 @@ ResidentCounts
 | Count        | int(7)      | NO   |     | NULL    |       |
 +--------------+-------------+------+-----+---------+-------+
 
+As of Sep 2014 update, a Tagging functionality has been made available which allows both personal categorization and sharing of educational cases.  The user tags are maintained in this table.
+
+ExamUserTags
++-----------------+-------------+------+-----+---------+-------+
+| Field           | Type        | Null | Key | Default | Extra |
++-----------------+-------------+------+-----+---------+-------+
+| AccessionNumber | varchar(15) | NO   | PRI | NULL    |       |
+| TraineeID       | int(11)     | NO   | KEY | NULL    |       |
+| Tag             | varchar(25) | NO   | KEY | NULL    |       |
++-----------------+-------------+------+-----+---------+-------+
+
+
 Capricorn handles logins in one of two ways.  First by registration.  New users can register by going through create_account.html, which will run their name in Capricorn to ensure they are a current resident, then use find_user.php and add_user.php to add an entry into LoginMember table.
 
 Alternatively, Capricorn supports LDAP, which allows the user to simply use their email account to log into Capricorn.  checklogin.php can work with both - it will first check LDAP, then if user is not found, check LoginMember.
@@ -121,9 +139,58 @@ LoginMember
 | PasswordHash| text        | NO   |     | NULL    |       |
 +-------------+-------------+------+-----+---------+-------+
 
+
+Capricorn now implements mechanisms to manage discrepancies.  The discrepancy tables rely on the above ExamMeta and ExamCodeDefinition tables, but not vice versa.  i.e. The volume/count functionality should work correctly even if this table is left unfilled.  
+
+Capricorn will attempt to match specific strings in a final report (customizable in config) and will automatically assign a discrepancy rating based on its math (AutoDiscrepancy).  An administrator has the ability to override this grading (AdminDiscrepancy).  For all studies, this table also stores comments that a trainee or admin may decide to record.  
+
+At our institution all significant discrepancies are reported back to the ED.  EDNotify field is designed to track that status. 
+
+The new tables managing discrepancies are listed below.
+
+ExamDiscrepancy
++------------------------+-------------+------+-----+---------+-------+
+| Field                  | Type        | Null | Key | Default | Extra |
++------------------------+-------------+------+-----+---------+-------+
+| AccessionNumber        | varchar(15) | NO   | PRI |         |       |
+| TraineeID              | int(11)     | NO   | PRI |         |       |
+| AutoDiscrepancy        | varchar(15) | NO   | MUL |         |       |
+| AdminDiscrepancy       | varchar(15) | NO   | MUL |         |       |
+| AdminComment           | tinytext    | YES  |     |         |       |
+| TraineeComment         | tinytext    | YES  |     |         |       |
+| TraineeMarkAsReviewed  | tinyint(1)  | NO   | KEY |  0      |       |
+| EDNotify               | tinyint(1)  | NO   |     |  0      |       |
++------------------------+-------------+------+-----+---------+-------+
+
+ExamDiscrepancyCounts table is used to track discrepancy counts internally by Capricorn.  It is calculated using ExamDiscrepancy joined with ExamCodeDefinition and handled by tools/batchUpdateDiscrepancy.php.
+
+ExamDiscrepancyCounts 
++--------------------+-------------+------+-----+---------+-------+
+| Field              | Type        | Null | Key | Default | Extra |
++--------------------+-------------+------+-----+---------+-------+
+| TraineeID          | int(11)     | NO   | PRI |  0      |       |
+| Section            | varchar(15) | NO   | PRI |         |       |
+| Type               | varchar(10) | NO   | PRI |         |       |
+| FinalDiscrepancy   | varchar(15) | NO   |     |         |       |
+| StartDate          | date        | NO   | PRI |         |       |
+| Count              | int(7)      | NO   |     |  0      |       |
++--------------------+-------------+------+-----+---------+-------+
+
+This store the preliminary and final report texts for an exam.  Used by Capricorn to calculate differences between the text in order to display them using a "track changes" style of visualization.
+
+To avoid duplicating text, the ExamReportText.AccessionNumber should correspond to ExamMeta.PrimaryAccessionNumber in the case of associated multiple examinations (all the Accessions should be associated with the same PrimaryAccessionNumber).
+
+ExamReportText
++------------------------+-------------+------+-----+---------+-------+
+| Field                  | Type        | Null | Key | Default | Extra |
++------------------------+-------------+------+-----+---------+-------+
+| AccessionNumber        | varchar(15) | NO   | PRI |         |       |
+| PreliminaryReportText  | text        | NO   |     |         |       |
+| FinalReportText        | text        | NO   |     |         |       |
++------------------------+-------------+------+-----+---------+-------+
+
+
 Part B - Web page display portal configuration
 1. Edit capricornConfig.php.dist with settings for your site and save-as capricornConfig.php
 2. Edit ldapconf.php.dist with settings for your site and save-as ldapconfig.php
-
-Part C - 
-3. displayReport.php can be customized to allow for viewing reports.  Report text is not stored in the capricorn database.
+3. displayReport.php can be customized to allow for viewing reports.  Starting from Sep 2014 update, report text is now stored in the Capricorn database.  To account for possible addenda, RIS is queried for the final report text, which is compared with ExamReportText.PreliminaryReportText to show changes.

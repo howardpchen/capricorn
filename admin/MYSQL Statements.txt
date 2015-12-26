@@ -1,0 +1,113 @@
+All Resident Performance
+SELECT
+    IF(rid.IsFellow, 'Fellow', 'Resident') AS `Group`,
+    COUNT(*) AS `All Studies`,
+    SUM(IF(IF(ed.AdminDiscrepancy > 0, ed.AdminDiscrepancy, ed.AutoDiscrepancy)='MajorChange',1,0)) AS `All Major`,
+    FORMAT(SUM(IF(IF(ed.AdminDiscrepancy > 0, ed.AdminDiscrepancy, ed.AutoDiscrepancy)='MajorChange',1,0))*10000 / COUNT(*)/100,2) AS 'Major %',
+    SUM(IF(em.Location='E', 1,0)) AS `ED`,
+    SUM(IF(ed.EDNotify='1', 1, 0)) AS `Emtrac`,
+    FORMAT(SUM(IF(ed.EDNotify='1', 1, 0)) / SUM(IF(em.Location='E', 1,0))*100,2) AS `ED Emtrac %`,
+    FORMAT(SUM(IF(IF(ed.AdminDiscrepancy > 0, ed.AdminDiscrepancy, ed.AutoDiscrepancy)='MajorChange' AND em.Location='E', 1, 0)) / SUM(IF(Location='E', 1,0))*100,2) AS `ED Major %`,
+    FORMAT(SUM(IF(ed.EDNotify='1' AND (IF(ed.AdminDiscrepancy > 0, ed.AdminDiscrepancy, ed.AutoDiscrepancy)='MajorChange') AND em.Location='E', 1,0))/ SUM(IF(Location='E', 1,0))*100,2) AS `ED Major + Emtrac %`,
+    SUM(IF(em.Location='I', 1, 0)) AS `Inpatient`,
+    SUM(IF(IF(ed.AdminDiscrepancy > 0, ed.AdminDiscrepancy, ed.AutoDiscrepancy)='MajorChange' AND (em.Location='I'), 1, 0)) AS `Inpt Major`, 
+    FORMAT(SUM(IF(IF(ed.AdminDiscrepancy > 0, ed.AdminDiscrepancy, ed.AutoDiscrepancy)='MajorChange' AND (em.Location='I'), 1, 0))/SUM(IF(Location='I', 1 ,0)) *100,2) AS `Inpt Major%`                                                 
+FROM 
+    ExamMeta AS em                    
+    INNER JOIN ResidentIDDefinition AS rid ON em.TraineeID=rid.TraineeID
+    LEFT JOIN ExamDiscrepancy AS ed ON em.AccessionNumber=ed.AccessionNumber
+WHERE 
+    rid.IsCurrentTrainee='Y' 
+    AND CompletedDTTM>'2013-07-01'
+    AND ed.AutoDiscrepancy!='None' 
+    AND ed.AutoDiscrepancy!='Attest'
+GROUP BY rid.IsFellow
+
+
+Overall Resident Performance Summary by Modality and Subspecialty
+SELECT
+    ecd.Type, ecd.Section, 
+    COUNT(*) as 'Total Volume',
+    SUM(IF(em.Location='E', 1, 0)) AS `ER Vol`,
+    SUM(IF(em.Location='I' AND (em.Urgency LIKE 'S%'), 1, 0)) AS `Inpt STAT Vol`,          
+    SUM(IF(IF(ed.AdminDiscrepancy > 0, ed.AdminDiscrepancy, ed.AutoDiscrepancy)='MajorChange',1,0)) AS `Major`,
+    FORMAT(SUM(IF(IF(ed.AdminDiscrepancy > 0, ed.AdminDiscrepancy, ed.AutoDiscrepancy)='MajorChange',1,0)) / COUNT(*)*100, 2) AS `Major %`,
+    SEC_TO_TIME(AVG(IF(em.Location='E', TIMESTAMPDIFF(SECOND, em.CompletedDTTM, em.PrelimDTTM), NULL))) AS `ED TAT`,
+    SEC_TO_TIME(AVG(IF(em.Location='I' AND em.Urgency LIKE 'S%', TIMESTAMPDIFF(SECOND, em.CompletedDTTM, em.PrelimDTTM), NULL))) AS `Inpt STAT TAT`              
+FROM 
+    ExamMeta AS em                    
+    INNER JOIN ResidentIDDefinition AS rid ON em.TraineeID=rid.TraineeID
+    INNER JOIN ExamCodeDefinition AS ecd ON em.ExamCode=ecd.ExamCode AND em.Organization=ecd.Org
+    LEFT JOIN ExamDiscrepancy AS ed ON em.AccessionNumber=ed.AccessionNumber
+WHERE 
+    rid.IsCurrentTrainee='Y' AND rid.IsFellow=0 
+    AND CompletedDTTM>'2013-07-01'
+    AND ed.AutoDiscrepancy!='None' 
+    AND ed.AutoDiscrepancy!='Attest'
+	AND em.Location != 'O'
+    AND (
+        (ecd.Type='CR' AND ecd.Section='CHEST') OR
+        (ecd.Type='CT' AND ecd.Section='CHEST') OR
+        (ecd.Type='CR' AND ecd.Section='MSK') OR
+        (ecd.Type='CT' AND ecd.Section='MSK') OR
+        (ecd.Type='CR' AND ecd.Section='BODY') OR
+        (ecd.Type='CT' AND ecd.Section='BODY') OR
+        (ecd.Type='US' AND ecd.Section!='BREAST') OR
+        (ecd.Type='MR' AND ecd.Section='NEURO') OR
+        (ecd.Type='CT' AND ecd.Section='NEURO') OR
+        (ecd.Type='MR' AND ecd.Section='SPINE') OR
+        (ecd.Type='CT' AND ecd.Section='SPINE') OR
+        (ecd.Type='FLUO' AND ecd.Section='GI') OR
+        (ecd.Type='FLUO' AND ecd.Section='GU') OR
+        (ecd.Type='NM' AND ecd.Section='SCINT')
+    )                                            
+GROUP BY ecd.Type, ecd.Section
+
+TAT Query
+
+
+SELECT em.PrimaryAccessionNumber as `Accession`, 
+em.Location AS `ED/Inpt`,
+rid.LastName AS `Last Name`, 
+rid.FirstName AS `First Name`, 
+ecd.Section AS `Section`, 
+ecd.Type AS `Modality`, 
+ecd.Description, 
+CompletedDTTM as `Completed`,
+PrelimDTTM as `Prelim'd`,
+TIMESTAMPDIFF(MINUTE, em.CompletedDTTM, em.PrelimDTTM) AS `TAT (mins)`
+FROM `exammeta` as em
+INNER JOIN `ExamCodeDefinition` as ecd ON (em.ExamCode = ecd.ExamCode AND ecd.ORG = em.Organization) 
+INNER JOIN `AttendingIDDefinition` as aid ON (em.AttendingID = aid.AttendingID)
+INNER JOIN `ResidentIDDefinition` as rid ON (em.TraineeID = rid.TraineeID)
+WHERE
+    rid.IsCurrentTrainee='Y' 
+    AND CompletedDTTM>'2014-10-01' 
+    AND em.Location != 'O'
+    AND em.Urgency LIKE 'S%'
+    AND (
+        IF(em.Location = 'E', TIMESTAMPDIFF(MINUTE, em.CompletedDTTM, em.PrelimDTTM) > 90,   
+                              TIMESTAMPDIFF(MINUTE, em.CompletedDTTM, em.PrelimDTTM) > 60)
+        )
+    AND (
+	DAYOFWEEK(em.CompletedDTTM)=7 
+	OR DAYOFWEEK(em.CompletedDTTM)=1 
+	OR HOUR(em.CompletedDTTM) >= 17 
+	OR HOUR(em.CompletedDTTM) <= 7 
+	)   
+    AND (
+        (ecd.Type='CR' AND ecd.Section='CHEST') OR
+        (ecd.Type='CT' AND ecd.Section='CHEST') OR
+        (ecd.Type='CR' AND ecd.Section='MSK') OR
+        (ecd.Type='CT' AND ecd.Section='MSK') OR
+        (ecd.Type='CR' AND ecd.Section='BODY') OR
+        (ecd.Type='CT' AND ecd.Section='BODY') OR
+        (ecd.Type='US' AND ecd.Section!='BREAST') OR
+        (ecd.Type='MR' AND ecd.Section='NEURO') OR
+        (ecd.Type='CT' AND ecd.Section='NEURO') OR
+        (ecd.Type='MR' AND ecd.Section='SPINE') OR
+        (ecd.Type='CT' AND ecd.Section='SPINE') OR
+        (ecd.Type='NM' AND ecd.Section='SCINT')
+    )                                            
+
+

@@ -18,7 +18,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-session_start();
+if(!isset($_SESSION)){session_start();}
+
+if (isset($_GET['changeprog'])) {
+    $_SESSION['program'] = $_GET['changeprog'];
+}
+
 if (isset($_GET['changeid'])) {
     $_SESSION['traineeid'] = $_GET['changeid'];
     unset($_SESSION['FullName']);
@@ -26,15 +31,25 @@ if (isset($_GET['changeid'])) {
     getLoginUserLastName();
     getLoginUserFullName();
 }
-
-header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
-header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+/**************************************
+ Check Login
+ **************************************/
 
 if(!isset($_SESSION['username'])) {
     header("location:".$URL_root);
 }
+// Auto logout after 30 mins.  This way don't have to rely on 
+// Session expiration date.
+if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800)) {
+	// last request was more than 30 minutes ago
+	session_unset();     // unset $_SESSION variable for the run-time 
+	session_destroy();   // destroy session data in storage
+	header("location: $URL_root");
+}
+$_SESSION['LAST_ACTIVITY'] = time(); // update last activity time stamp
 
-writeLog($_SESSION['traineeid']);
+
+writeLog("Loaded by " . $_SESSION['traineeid']);
 
 
 include "header_nosession.php";

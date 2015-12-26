@@ -186,7 +186,6 @@ $data = getOverallCountArray(getLoginUserPGY() - 1, '%', '%', '', thisJulyFirst(
 echoYouVSClassGraphJS($data);
 makeDIV('projected', '750px', '400px');  // part of CapicornLib
 
-
 ?>
 
 

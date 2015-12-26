@@ -23,8 +23,8 @@ include "capricornLib.php";
 <!doctype html>
 <html>
 <head>
-<link rel="stylesheet" href="<?php echo $URL_root; ?>css/jquery-ui.css" />
-<link href="<?php echo $URL_root; ?>css/chardinjs.css" rel="stylesheet">
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<link href="chardinjs.css" rel="stylesheet">
 <script src="<?php echo $URL_root; ?>js/jquery-1.9.1.js"></script>
 <script src="<?php echo $URL_root; ?>js/jquery-ui.js"></script>
 <script src="<?php echo $URL_root; ?>js/highcharts.js"></script>
@@ -38,8 +38,8 @@ include "capricornLib.php";
 <table border=0 width=100% cellpadding=0 cellspacing=0><tr><td style="padding:15px" valign=top width=250 data-intro="Modalities are generally organized by sections. <P>e.g. CXR is under Chest->Radiography. <P>Body CT is under Body->Computed Tomography <P> Chest CT is under Chest->Computed Tomography" data-position="right">
 
 <?php
-if (!isset($_GET['sec'])) $_GET['sec'] = $statisticsDefault['Section'];
-if (!isset($_GET['mod'])) $_GET['mod'] = $statisticsDefault['Type'];
+if (!isset($_GET['sec'])) $_GET['sec'] = 'CHEST';
+if (!isset($_GET['mod'])) $_GET['mod'] = 'CR';
 
 
 $smn = getExamCodeData('Section, Type', NULL, "ORDER BY SECTION, TYPE");

@@ -19,7 +19,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 include 'capricornLib.php';
-include 'header.php';
+// include 'header.php';
 // Must find resident first
 
 $tbl_name="LoginMember"; // Table name 

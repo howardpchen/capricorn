@@ -1,30 +1,8 @@
-<?php include "capricornLib.php"; 
-
-/*
-    Capricorn - Open-source analytics tool for radiology residents.
-    Copyright (C) 2014  (Howard) Po-Hao Chen
-
-    This file is part of Capricorn.
-
-    Capricorn is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-?>
-
+<?php include "capricornLib.php"; ?>
 <html>
 <head>
-<link rel="stylesheet" href="<?php echo $URL_root; ?>css/jquery-ui.css" />
-<link href="<?php echo $URL_root; ?>css/chardinjs.css" rel="stylesheet">
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<link href="chardinjs.css" rel="stylesheet">
 
 <script src="<?php echo $URL_root; ?>js/jquery-1.9.1.js"></script>
 <script src="<?php echo $URL_root; ?>js/jquery-ui.js"></script>
@@ -45,7 +23,7 @@ $reportText = "";
 $conn2 = sqlsrv_connect($RISName, $connectionInfo);
 $table1 = "vusrExamDiagnosticReportText";
 
-$sql = "select AccessionNumber from `ExamMeta` WHERE TraineeID='" . $_SESSION['traineeid'] . "' ORDER BY CompletedDTTM DESC LIMIT 0, 10";
+$sql = "select AccessionNumber from `exammeta` WHERE TraineeID='" . $_SESSION['traineeid'] . "' ORDER BY CompletedDTTM DESC LIMIT 0, 10";
 
 $results = $resdbConn->query($sql) or die (mysqli_error($resdbConn));
 $results = $results->fetch_all();

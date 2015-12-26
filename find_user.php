@@ -1,3 +1,4 @@
+
 <?php
 /*
     Capricorn - Open-source analytics tool for radiology residents.
@@ -19,7 +20,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 include 'capricornLib.php';
-
+//include 'header_nosession.php';
 // Must find resident first
 
 $db_name="localhost"; // Database name 
@@ -39,7 +40,7 @@ $myresidentid = -1;
 
 // $sqlquery = "SELECT ResidentFirstName, ResidentLastName, ResidentID FROM ResidentIDDefinition WHERE ResidentFirstName=\"$myfirstname\" AND ResidentLastName=\"$mylastname\";";
 
-$sqlquery = "SELECT COUNT(*) as count FROM $res_tbl_name WHERE FirstName LIKE \"$myfirstname\" AND LastName LIKE \"$mylastname\" AND IsCurrentTrainee=1;";
+$sqlquery = "SELECT COUNT(*) as count FROM $res_tbl_name WHERE FirstName LIKE \"$myfirstname\" AND LastName LIKE \"$mylastname\" AND IsCurrentTrainee='Y';";
 
 $results = $db->query($sqlquery);
 

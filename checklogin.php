@@ -47,30 +47,18 @@ function login($user, $password) {
     $result = '';
     include 'config/ldapConfig.php';
 
-    ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7); 
-
-
     if (!$USE_LDAP)  {
         return passwordAccepted($password, $user, $db);
     }
-
+    
     // Connect to LDAP service
-    if (strpos($ldap['url'], 'ldaps') !== FALSE) {
-        // We have an SSL URL
-        $conn = ldap_connect($ldap['url']);
-        ldap_set_option($conn, LDAP_OPT_REFERRALS, 0);
-        ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
-    } else {
-        $conn = ldap_connect($ldap['server'], $port);
-    }
-
-    if ($conn === FALSE) {
+    $conn_status = ldap_connect($server, $port);
+    if ($conn_status === FALSE) {
         print_r("Problem connecting");
         return passwordAccepted($password, $user, $db);
     }
-
     // Bind as application
-    $bind_status = ldap_bind($conn, $ldap['bind_username'], $ldap['bind_password']);
+    $bind_status = ldap_bind($conn_status, $username, $pwd);
     if ($bind_status === FALSE) {
         print_r("Problem binding");
         return passwordAccepted($password, $user, $db);
@@ -78,13 +66,13 @@ function login($user, $password) {
     // Find the user's DN
     $attributes = array("displayname","ou");
     $filter = "(&(samaccountName=".$user."))";
-    $search_status = ldap_search($conn, $ldap['basedn'], $filter, $attributes);
+    $search_status = ldap_search($conn_status, $basedn, $filter, $attributes);
     if ($search_status === FALSE) {
         print_r("Problem finding user");
         return passwordAccepted($password, $user, $db);
     }
     // Pull the search results
-    $result = ldap_get_entries($conn, $search_status);
+    $result = ldap_get_entries($conn_status, $search_status);
     if ($result === FALSE) {
         print_r("Problem getting search results");
         return passwordAccepted($password, $user, $db);
@@ -97,22 +85,19 @@ function login($user, $password) {
         return passwordAccepted($password, $user, $db);
     }
     // Authenticate with the newly found DN and user-provided password
-    $auth_status = ldap_bind($conn, $userdn, $password);
+    $auth_status = ldap_bind($conn_status, $userdn, $password);
     if ($auth_status === FALSE) {
         return passwordAccepted($password, $user, $db);
     }
+    // check that user is in Radiology to finally allow login!
+    $OUtoSearch = array('OU=Radiology', 'OU=PAH', 'OU=HUP');
 
-    // check that user is in required_ou
-    if ($ldap['required_ou'] !== NULL) {
-        if (strpos($result[0]['dn'], $ldap['required_ou']) !== false) {
+    foreach ($OUtoSearch as $dept) {
+        if (strpos($result[0]['dn'],$dept) !== false) {
             return $result;
-        }        
-    } else {
-        return $result;
+        }
     }
 
-    // Close the ldap connection since we're done with it
-    ldap_close($conn);
     return passwordAccepted($password, $user, $db);
 }
 
@@ -159,22 +144,26 @@ function passwordAccepted($password, $username, $database) {
 }
 
 function getTraineeID($username, $database) {
-    global $USE_LDAP;
-
     $sqlquery = "SELECT TraineeID FROM LoginMember WHERE Username LIKE \"$username\";";
     $results = $database->query($sqlquery);
     $row = $results->fetch_array();
     return $row['TraineeID'];
 }
 
-// The code starts here.
+function getProgram ($userid, $database)  {
+    $sqlquery = "SELECT Program FROM ResidentIDDefinition WHERE TraineeID=$userid;";
+    $results = $database->query($sqlquery);
+    $row = $results->fetch_array();
+    return $row['Program'];
+}
 
 if ((!isset($_POST['myusername']) || !isset($_POST['mypassword'])) && isset($_SESSION['traineeid'])) {
-
+	if (isset($_SESSION['adminid'])) $_SESSION['traineeid'] = $_SESSION['adminid'];
     if ($_SESSION['traineeid'] > 90000000) {               // INTERNAL DEFINITION OF ADMINISTRATOR
         header("location:admin/");
     }
     else {
+		writeLog($_SESSION['traineeid'] . " has logged in.");
         header("location:login_success.php");
     }
     
@@ -203,14 +192,15 @@ else {
             $firstmiddle = explode(' ', $fullname[1]);
             $firstname = $firstmiddle[0];
             //echo $lastname .  "---" . $firstname . "<BR>";
-            $sqlquery = "SELECT COUNT(*) as count FROM ResidentIDDefinition WHERE FirstName LIKE \"$firstname\" AND LastName LIKE \"$lastname\" AND IsCurrentTrainee=1;";       
+            $sqlquery = "SELECT COUNT(*) as count FROM ResidentIDDefinition WHERE FirstName LIKE \"$firstname\" AND LastName LIKE \"$lastname\" AND IsCurrentTrainee='Y';";       
 
             $results = $db->query($sqlquery);
             $row = $results->fetch_array();
 
             if ($row['count'] > 1 || $row['count'] == 0)  {
                 include "header_nosession.php";
-                echo "<p>An error occured while associating your institutional login with Capricorn.</p><p>For example, this may happen if you are a radiologist but not (or no longer) a trainee.</p><p>Contact the administrator to resolve this issue.</p>";
+                echo "<p>An error occured while associating your institutional login with Capricorn.</p><p>For example, this may happen if you are a radiologist but not (or no longer) a trainee, or if your name has changed recently.</p><p>Contact the administrator to resolve this issue, and please include this message in your email: ERROR attempting to match network name $firstname $lastname.</P>";
+				writeLog("ERROR attempting to match LDAP name: [$firstname] [$lastname]");
                 exit();
             } else  {
                 $sqlquery = "SELECT FirstName, LastName, TraineeID FROM ResidentIDDefinition WHERE FirstName LIKE \"$firstname\" AND LastName LIKE \"$lastname\";";
@@ -223,7 +213,11 @@ else {
         }
         $_SESSION['username'] = $myusername;
         $_SESSION['traineeid'] = $id;
+        $_SESSION['program']= getProgram($id, $db);
+		$_SESSION['LAST_ACTIVITY'] = time(); // update last activity time stamp
+
         if ($id > 90000000) {               // INTERNAL DEFINITION OF ADMINISTRATOR
+            $_SESSION['adminid'] = $id;
             header("location:admin/");
         }
         else {
@@ -235,7 +229,6 @@ else {
         session_destroy();
     }
 }
-
 
 ob_end_flush();
 ?>

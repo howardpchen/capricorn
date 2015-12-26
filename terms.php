@@ -14,9 +14,9 @@ include "header_nosession.php"; ?>
 <div class='8u' style='font-size:12pt'>
 <b>Capricorn Terms of Service ("Agreement")</b>
 <p>
-This Agreement was last modified on April 30, 2014.
+This Agreement was last modified on July 4, 2014.
 <p>
-Please read these Terms of Service completely using Capricorn (Software) which is created by Po-Hao Chen, MD, MBA, Yin Jie Chen, MD, and supervised by Tessa Cook, MD, PhD, at the Hospital of University of Pennsylvania.  By using or accessing the Software in any way, viewing or browsing the Software, or adding your own content to the Software, you are agreeing to be bound by these Terms of Service.
+Please read these Terms of Service completely using Capricorn (the Software) which is created by Po-Hao Chen, MD, MBA, Yin Jie Chen, MD, and supervised by Tessa Cook, MD, PhD, at the Hospital of University of Pennsylvania.  By using or accessing the Software in any way, viewing or browsing the Software, or adding your own content to the Software, you are agreeing to be bound by these Terms of Service.
 <p>
 Disclaimer
 <p>
@@ -33,7 +33,7 @@ Changes to This Agreement
 <p>
 Capricorn reserves the right to modify these Terms of Service at any time. We do so by posting and drawing attention to the updated terms on the Software. Your decision to continue to visit and make use of the Software after such changes have been made constitutes your formal acceptance of the new Terms of Service.
 <p>
-Therefore, we ask that you check and review this Agreement for such changes on an occasional basis. Should you not agree to any provision of this Agreement or any changes we make to this Agreement, we ask and advise that you do not use or continue to access the Your Nowhere Town site immediately.
+Therefore, we ask that you check and review this Agreement for such changes on an occasional basis. Should you not agree to any provision or any changes we make to the Agreement, we ask and advise that you stop accessing Capricorn immediately.
 <p>
 Contact Us
 <p>
