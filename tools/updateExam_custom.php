@@ -43,13 +43,13 @@ $runTimeStart = date_create('NOW');
 $endDTTM = date_create('NOW');
 
 // Uncomment this if you want to start updating from a specific date in the format of "YYYY-MM-DD H:MM"
-$endDTTM = date_create("2015-5-27"); 
+//$endDTTM = date_create("2015-5-27"); 
 
 $interval = new DateInterval("P1D");  // Set interval to 1 day.
 $startDTTM = clone $endDTTM;
 $startDTTM->sub($interval);
 
-$count = 90;     //Number of days.
+$count = 180;     //Number of days.
 
 $resTable = "ResidentIDDefinition";     // MySQL table names
 $examTable = "ExamMeta";

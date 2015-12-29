@@ -72,6 +72,9 @@ You are using an older browser.  Although there are cosmetic differences, key fu
 This section can be replaced with your own update logs to inform your users.
 -->
                                     <textarea class="changelog" disabled>
+12/26/2015:
+ - Added ability to vote on educational cases.  
+ - "Teaching Cases" button implemented and superceding Chief Treasures, sorted by # of votes.
 9/15/2015:
  - Added 170 new exam codes previously not counted.  Notably this affects some breast imaging studies from PAH, as well as selected procedures/biopsies.
 
