@@ -86,6 +86,11 @@ switch ($_GET['mode'])  {
         $startDate->sub(new DateInterval('P7D')); 
 		$results = getPrevCall($startDate->format('Y-m-d'), $endDate->format('Y-m-d'));
 		break;
+    case "GreatCall4Pantel":
+        if ($_SESSION['traineeid'] != '1331' && $_SESSION['traineeid'] != '1658') exit();
+        $results = getGreatCallAll($startDate->format('Y-m-d'), $endDate->format('Y-m-d'));
+        break;
+    
     default:
         $results = getTraineeStudiesByDate($startDate->format('Y-m-d'),
         $endDate->format('Y-m-d'), $_GET['sec'], $_GET['typ'],

@@ -89,12 +89,13 @@ function printTable($year, $modsec='N') {
 		$order = "ecd.Type";
 	}
 
-	if (isset($_GET['class']) && $_GET['class'] > 0)  {
+	if (isset($_GET['class']) && ($_GET['class'] > 0 || $_GET['class'] == 'fel'))  {
 		$order = ' rid.TraineeID, rid.LastName, rid.FirstName ';
 		if ($_GET['class'] == 'fel')  {
 			$listTitle = "Fellows " . $listTitle;
 			$yearString = '';
 			$group = "rid.IsCurrentTrainee='Y' AND rid.IsFellow=1";
+            $order .= ', rid.Subspecialty ';
 		}
 	}
 
@@ -105,7 +106,11 @@ function printTable($year, $modsec='N') {
 #		SUM(IF(em.Location='E', 1, 0)) AS `ER Vol`,
 #		SUM(IF(em.Location='I' AND (em.Urgency LIKE 'S%'), 1, 0)) AS `Inpt STAT Vol`,          
 		SUM(IF(CompositeDiscrepancy='MajorChange',1,0)) AS `Major`,
-		FORMAT(SUM(IF(CompositeDiscrepancy='MajorChange',1,0)) / COUNT(*)*100, 2) AS `Major %`
+		FORMAT(SUM(IF(CompositeDiscrepancy='MajorChange',1,0)) / COUNT(*)*100, 2) AS `Major %`,
+		SUM(IF(CompositeDiscrepancy='MinorChange',1,0)) AS `Minor`,
+		FORMAT(SUM(IF(CompositeDiscrepancy='MinorChange',1,0)) / COUNT(*)*100, 2) AS `Minor %`,
+		SUM(IF(CompositeDiscrepancy='Addition',1,0)) AS `Addition`,
+		FORMAT(SUM(IF(CompositeDiscrepancy='Addition',1,0)) / COUNT(*)*100, 2) AS `Addition %`
 #		SEC_TO_TIME(AVG(IF(em.Location='E', PrelimTAT, NULL))) AS `ED TAT`,
 #		SEC_TO_TIME(AVG(IF(em.Location='I' AND em.Urgency LIKE 'S%', PrelimTAT, NULL))) AS `Inpt STAT TAT`,              
 #		CONCAT(SUM(IF(PrelimTAT > 90*60 AND em.Location='E' AND em.Urgency LIKE 'S%', 1, 0)), ' (', 
@@ -179,7 +184,7 @@ Click on header to sort.
 // CHECK FOR ADMIN STATUS
 checkAdmin();
 
-if (isset($_GET['class']) && $_GET['class'] > 0)  {
+if (isset($_GET['class']) && ($_GET['class'] > 0 || $_GET['class'] == 'fel'))  {
 	printTable($_GET['class']);
 }
 else {

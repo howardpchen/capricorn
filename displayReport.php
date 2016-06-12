@@ -166,11 +166,20 @@ else {
 <div id="tabs">
 <ul>
 <?php 
-echo <<< END
-<li><a href="#final">Final</a></li>
-<li><a href="#prelim">Preliminary</a></li>
-<li><a href="#diff">Show Changes</a></li>
+if ($prelimText > '')  {
+    echo <<< END
+    <li><a href="#diff">Show Changes</a></li>
+    <li><a href="#final">Final</a></li>
+    <li><a href="#prelim">Preliminary</a></li>
 END;
+} else  {
+    echo <<< END
+    <li><a href="#final">Final</a></li>
+    <li><a href="#prelim">Preliminary</a></li>
+    <li><a href="#diff">Show Changes</a></li>
+END;
+}
+
 ?>
 </ul>
 <div id="diff">

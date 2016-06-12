@@ -72,9 +72,19 @@ You are using an older browser.  Although there are cosmetic differences, key fu
 This section can be replaced with your own update logs to inform your users.
 -->
                                     <textarea class="changelog" disabled>
+5/3/2016:
+ - Bug fixes
+ - (Some) preliminary reports are now available
+ - Capricorn will show changes between prelim and final report when it can.
+
+1/3/2016:
+ - Changed discrepancy algorithm to accomodate both old and new "Agree" macros.
+
 12/26/2015:
  - Added ability to vote on educational cases.  
  - "Teaching Cases" button implemented and superceding Chief Treasures, sorted by # of votes.
+ - Added additional new exam codes from various UPHS sites.
+
 9/15/2015:
  - Added 170 new exam codes previously not counted.  Notably this affects some breast imaging studies from PAH, as well as selected procedures/biopsies.
 

@@ -117,7 +117,11 @@ function printTable($modsec='N', $total='N') {
 #		SUM(IF(em.Location='E', 1, 0)) AS `ER Vol`,
 #		SUM(IF(em.Location='I' AND (em.Urgency LIKE 'S%'), 1, 0)) AS `Inpt STAT Vol`,          
 		SUM(IF(CompositeDiscrepancy='MajorChange',1,0)) AS `Major`,
-		FORMAT(SUM(IF(CompositeDiscrepancy='MajorChange',1,0)) / COUNT(*)*100, 2) AS `Major %`
+		FORMAT(SUM(IF(CompositeDiscrepancy='MajorChange',1,0)) / COUNT(*)*100, 2) AS `Major %`,
+		SUM(IF(CompositeDiscrepancy='MinorChange',1,0)) AS `Minor`,
+		FORMAT(SUM(IF(CompositeDiscrepancy='MinorChange',1,0)) / COUNT(*)*100, 2) AS `Minor %`,
+		SUM(IF(CompositeDiscrepancy='Addition',1,0)) AS `Addition`,
+		FORMAT(SUM(IF(CompositeDiscrepancy='Addition',1,0)) / COUNT(*)*100, 2) AS `Addition %`
 	FROM 
 		ExamMeta AS em                    
 		INNER JOIN ResidentIDDefinition AS rid ON em.TraineeID=rid.TraineeID

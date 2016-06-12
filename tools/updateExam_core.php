@@ -65,17 +65,26 @@ while ($count > 0) {
 
     $sql = "
     SELECT Patient.LastName AS PatientLastName, Patient.FirstName as
-    PatientFirstName, vReport.ContentText AS ContentText, Site.SiteID AS
+    PatientFirstName, vReport.ContentText AS ContentText, 
+    (
+        SELECT TOP 1 ContentText AS PrelimText FROM ReportVersions as rv
+        WHERE ReportEventTypeID<=12 AND rv.ReportID=ord.ReportID AND rv.AccountID=ord.DictatorAcctID
+        ORDER BY rv.EventTime DESC
+        ) AS PrelimReportText,
+    Site.SiteID AS
     SiteID, Site.Name as SiteName, 
     ord.DictatorAcctID AS TraineeID,
-    vVisit.PointofCare as PointofCare, pc.Abbrev AS Location, (SELECT MIN(Accession) FROM vOrder
-    as vo WHERE vo.ReportID=ord.ReportID) as PrimaryAccession, Communevent.Recipient AS EDNotify, ord.* FROM
+    vVisit.PointofCare as PointofCare, pc.Abbrev AS Location, 
+    
+    (SELECT MIN(Accession) FROM vOrder as vo WHERE vo.ReportID=ord.ReportID) as PrimaryAccession, 
+    Communevent.Recipient AS EDNotify, ord.* 
+    FROM
     vOrder AS ord 
     INNER JOIN vReport ON ord.ReportID=vReport.ReportID 
     INNER JOIN Patient ON ord.PatientID=Patient.PatientID 
     INNER JOIN Site ON ord.SiteID=Site.SiteID
     INNER JOIN vVisit ON ord.VisitID=vVisit.VisitID
-    INNER JOIN PatientClass AS pc ON pc.PatientClassID=ord.PatientClassID
+    INNER JOIN PatientClass AS pc ON pc.PatientClassID=ord.PatientClassID         
     LEFT JOIN Communevent ON ord.ReportID=Communevent.ReportID
     WHERE 
     ord.SignerAcctID > '' AND 
@@ -86,7 +95,13 @@ while ($count > 0) {
     UNION ALL
 
     SELECT Patient.LastName AS PatientLastName, Patient.FirstName as
-    PatientFirstName, vReport.ContentText AS ContentText, Site.SiteID AS
+    PatientFirstName, vReport.ContentText AS ContentText, 
+    (
+        SELECT TOP 1 ContentText AS PrelimText FROM ReportVersions as rv
+        WHERE rv.ReportEventTypeID<=12 AND rv.ReportID=ord.ReportID AND rv.AccountID=ord.DictatorAcctID
+        ORDER BY rv.EventTime DESC
+        ) AS PrelimReportText,
+    Site.SiteID AS
     SiteID, Site.Name as SiteName, vReport.CreatorAcctID as TraineeID,
     vVisit.PointofCare as PointofCare, pc.Abbrev AS Location, (SELECT MIN(Accession) FROM vOrder
     as vo WHERE vo.ReportID=ord.ReportID) as PrimaryAccession, Communevent.Recipient AS EDNotify, ord.* FROM
@@ -139,6 +154,7 @@ while ($count > 0) {
         $studiesEntry['OrganizationID'] = trim($value['SiteID']);
         $studiesEntry['Organization'] = $value['SiteName'];
         $studiesEntry['CompletedDTTM'] = $value['OrderDate'];
+        $studiesEntry['PrelimDTTM'] = ($value['LastPrelimDate'] > '' ? $value['LastPrelimDate']->format('Y-m-d H:i:s'): 'NULL');
         $studiesEntry['AttendingID'] = $value['SignerAcctID'];
         $studiesEntry['TraineeID'] = $value['TraineeID'];
         $studiesEntry['Location'] = $value['Location'];
@@ -165,17 +181,8 @@ while ($count > 0) {
         // Calculate Inquiry, Draft and Prelim Times
         $studiesEntry['InquiryDTTM'] = $inquirydate = NULL;
         $studiesEntry['DraftDTTM'] = $draftdate = NULL;
-        $studiesEntry['PrelimDTTM'] = $prelimdate = NULL;
 
-
-        /* 
-        Get Final Report text.  It can be difficult to figure out what
-        "Finalize" means on RIS audit, because even after attending signs
-        report, billers can still audit and update the RIS data with charge
-        data.  But since the finalized report text cannot change by law, we
-        can just check the general report database.
-        */
-
+        $studiesEntry['PrelimReportText'] = $value['PrelimReportText'];
         $studiesEntry['FinalReportText'] = $value['ContentText'];
 
         $s = $studiesEntry;
@@ -205,7 +212,7 @@ while ($count > 0) {
 
         // Then save the report text into Capricorn
         if ($s['AccessionNumber'] == $s['PrimaryAccessionNumber']) {
-            $sql = "REPLACE INTO $examTextTable (AccessionNumber, FinalReportText) VALUES (\"" . $s['PrimaryAccessionNumber'] . "\", \"" . mysql_real_escape_string($s['FinalReportText']) . "\");";
+            $sql = "REPLACE INTO $examTextTable (AccessionNumber, PreliminaryReportText, FinalReportText) VALUES (\"" . $s['PrimaryAccessionNumber'] . "\", \"" . mysql_real_escape_string($s['PrelimReportText']) . "\", \"" . mysql_real_escape_string($s['FinalReportText']) . "\");";
             $resdbConn->query($sql) or die (mysqli_error($resdbConn));
 
             // Also, determine discrepancy.
@@ -235,11 +242,11 @@ while ($count > 0) {
     /* 
        TEMPORARILY DISABLE THE PRELIM TIME - WE DON'T HAVE AN ACCURATE WAY OF
        ACCOUNTING FOR THIS - 2015-05-03
+       */
 	$sql = "UPDATE ExamMeta SET PrelimTAT=TIMESTAMPDIFF(SECOND,CompletedDTTM, PrelimDTTM) WHERE 
 		CompletedDTTM >= '". $startDTTM->format('Y-m-d H:i') . "' AND 
 		CompletedDTTM <= '" . $endDTTM->format('Y-m-d H:i') . "'";
 	$resdbConn->query($sql) or die (mysqli_error($resdbConn));
-    */
 
     echo "Updated studies performed from " . $startDTTM->format('Y-m-d H:i') . " to " . $endDTTM->format('Y-m-d H:i') . "\n";
     writeLog("Updated studies performed from " . $startDTTM->format('Y-m-d H:i') . " to " . $endDTTM->format('Y-m-d H:i'));

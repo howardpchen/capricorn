@@ -848,7 +848,7 @@ function getTraineeStudiesByDate($startDate, $endDate, $section, $type, $notes, 
     } else  {
         $sqlquery .= " ORDER BY em.CompletedDTTM DESC ";
     }
-    if ($maxLimit) $sqlquery .= " limit 0, 1000";
+    if ($maxLimit) $sqlquery .= " limit 0, 200";
     $results = $resdbConn->query($sqlquery) or die (mysqli_error($resdbConn));
     return $results;
 }
