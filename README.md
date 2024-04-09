@@ -1,8 +1,9 @@
 ## Capricorn - Radiology Residency Analytics Tool
 
 Designed by: (Howard) Po-Hao Chen, MD, MBA, Yin Jie Chen, MD, Tessa Cook, MD, PhD, at the Hospital of University of Pennsylvania
-For a general introduction to Capricorn, see http://capricornradiology.org
+For a general introduction to Capricorn, see https://capricorn.howardpchen.com
 Licensed Under GNU General License 3.0.
+
 
 ## Design Decisions and Issues
 
@@ -60,6 +61,5 @@ Capricorn then calculates in real time the user's counts between July 1st and th
 
 ## Questions, Problems?
 
-Use http://capricornradiology.org/contact.php, or alternatively, email po-hao.chen@uphs.upenn.edu
-
+Use https://howardpchen.com/, or alternatively, email howardpchen.mail@gmail.com
 
